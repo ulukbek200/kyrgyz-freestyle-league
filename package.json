@@ -1,0 +1,20 @@
+{
+  "name": "wrestling-league",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "db:up": "docker compose up -d",
+    "db:migrate": "npm run db:migrate -w @league/api",
+    "db:seed": "npm run db:seed -w @league/api",
+    "dev:api": "npm run dev -w @league/api",
+    "dev:web": "npm run dev -w @league/web",
+    "build": "npm run build -w @league/api && npm run build -w @league/web",
+    "test": "npm run test -w @league/api",
+    "test:unit": "npm run test:unit -w @league/api",
+    "test:integration": "npm run test:integration -w @league/api",
+    "typecheck": "npm run typecheck -w @league/api && npm run typecheck -w @league/web",
+    "db:deploy": "npm run db:deploy -w @league/api"
+  }
+}

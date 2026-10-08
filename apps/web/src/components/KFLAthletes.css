@@ -1,0 +1,358 @@
+
+.kfl-athletes {
+  --red: #ed262f;
+  background: #0d0e12;
+  color: #fff;
+  padding: 115px 0 100px;
+  overflow: hidden;
+}
+
+.kfl-athletes *,
+.kfl-athletes *::before,
+.kfl-athletes *::after {
+  box-sizing: border-box;
+}
+
+.kfl-athletes__container {
+  width: min(100% - 96px, 1440px);
+  margin: 0 auto;
+}
+
+.kfl-athletes__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 48px;
+}
+
+.kfl-athletes__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.kfl-athletes__header h2 {
+  margin: 18px 0 0;
+  font-family: Impact, 'Arial Narrow', sans-serif;
+  font-size: clamp(75px, 10vw, 150px);
+  line-height: 0.85;
+  letter-spacing: -0.035em;
+}
+
+.kfl-athletes__header h2 span {
+  color: var(--red);
+}
+
+.kfl-athletes__header-right {
+  max-width: 340px;
+  padding-bottom: 8px;
+}
+
+.kfl-athletes__header-right p {
+  margin: 0 0 24px;
+  color: #a8a8b1;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.kfl-athletes__header-right a,
+.kfl-athletes__footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: color 0.25s;
+}
+
+.kfl-athletes__header-right a:hover,
+.kfl-athletes__footer a:hover {
+  color: var(--red);
+}
+
+.kfl-athletes__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.kfl-athletes__card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: #17181e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  text-decoration: none;
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.kfl-athletes__card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(237, 38, 47, 0.65);
+  color: #fff;
+}
+
+.kfl-athletes__card-media {
+  position: relative;
+  height: 380px;
+  overflow: hidden;
+  background: #1c1d24;
+}
+
+.kfl-athletes__card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.7s ease;
+}
+
+.kfl-athletes__card:hover img {
+  transform: scale(1.07);
+}
+
+.kfl-athletes__card-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(9, 10, 13, 0.75),
+    transparent 50%
+  );
+}
+
+.kfl-athletes__placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(
+      circle at 50% 70%,
+      rgba(237, 38, 47, 0.13),
+      transparent 60%
+    ),
+    #1c1d24;
+  color: #373943;
+  font-size: 105px;
+}
+
+.kfl-athletes__card-number {
+  position: absolute;
+  top: 17px;
+  left: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: Impact, sans-serif;
+  font-size: 26px;
+}
+
+.kfl-athletes__card-tag {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  padding: 7px 9px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.kfl-athletes__card-info {
+  padding: 24px 20px 20px;
+}
+
+.kfl-athletes__card-category {
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.kfl-athletes__card-info h3 {
+  margin: 12px 0 9px;
+  font-family: Impact, 'Arial Narrow', sans-serif;
+  font-size: clamp(24px, 2.5vw, 37px);
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.kfl-athletes__card-info p {
+  min-height: 20px;
+  margin: 0;
+  color: #a1a2aa;
+  font-size: 12px;
+}
+
+.kfl-athletes__card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.kfl-athletes__card-bottom span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.kfl-athletes__card-bottom > .anticon {
+  color: var(--red);
+  font-size: 17px;
+}
+
+.kfl-athletes__empty {
+  padding: 85px 24px;
+  background: #17181e;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: center;
+}
+
+.kfl-athletes__empty-icon {
+  margin-bottom: 20px;
+  color: var(--red);
+  font-size: 42px;
+}
+
+.kfl-athletes__empty h3 {
+  margin: 0 0 14px;
+  font-family: Impact, sans-serif;
+  font-size: clamp(30px, 4vw, 54px);
+}
+
+.kfl-athletes__empty p {
+  max-width: 480px;
+  margin: 0 auto 28px;
+  color: #a8a8b1;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.kfl-athletes__empty > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 23px;
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.kfl-athletes__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 35px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.kfl-athletes__footer > span {
+  color: #777984;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+@media (max-width: 1100px) {
+  .kfl-athletes__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .kfl-athletes {
+    padding: 75px 0;
+  }
+
+  .kfl-athletes__container {
+    width: calc(100% - 32px);
+  }
+
+  .kfl-athletes__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+  }
+
+  .kfl-athletes__header h2 {
+    font-size: clamp(68px, 17vw, 110px);
+  }
+
+  .kfl-athletes__header-right p {
+    font-size: 13px;
+  }
+
+  .kfl-athletes__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .kfl-athletes__card-media {
+    height: 230px;
+  }
+
+  .kfl-athletes__card-info {
+    padding: 16px 12px;
+  }
+
+  .kfl-athletes__card-info h3 {
+    font-size: 23px;
+  }
+
+  .kfl-athletes__card-number {
+    font-size: 20px;
+  }
+
+  .kfl-athletes__card-tag {
+    display: none;
+  }
+
+  .kfl-athletes__card-bottom span {
+    font-size: 9px;
+  }
+
+  .kfl-athletes__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 380px) {
+  .kfl-athletes__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kfl-athletes__card-media {
+    height: 350px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kfl-athletes__card,
+  .kfl-athletes__card img {
+    transition: none;
+  }
+}

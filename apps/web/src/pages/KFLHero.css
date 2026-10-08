@@ -1,0 +1,480 @@
+
+.kfl-home-hero {
+  --kfl-red: #ed262f;
+  --kfl-white: #f7f7f8;
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 780px;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #08090c;
+  color: var(--kfl-white);
+  font-family: Inter, Arial, sans-serif;
+}
+
+.kfl-home-hero *,
+.kfl-home-hero *::before,
+.kfl-home-hero *::after {
+  box-sizing: border-box;
+}
+
+.kfl-home-hero__media,
+.kfl-home-hero__poster,
+.kfl-home-hero__video,
+.kfl-home-hero__shade,
+.kfl-home-hero__grid,
+.kfl-home-hero__glow {
+  position: absolute;
+  inset: 0;
+}
+
+.kfl-home-hero__media {
+  z-index: -1;
+  overflow: hidden;
+}
+
+.kfl-home-hero__poster {
+  background-image: url('/media/kfl-hero-poster.webp');
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.04);
+}
+
+.kfl-home-hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.kfl-home-hero__video.is-ready {
+  opacity: 1;
+}
+
+.kfl-home-hero__shade {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4, 5, 8, 0.96) 0%,
+      rgba(4, 5, 8, 0.83) 34%,
+      rgba(4, 5, 8, 0.34) 75%,
+      rgba(4, 5, 8, 0.5) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(4, 5, 8, 0.96),
+      transparent 35%,
+      rgba(4, 5, 8, 0.25)
+    );
+}
+
+.kfl-home-hero__grid {
+  opacity: 0.12;
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.12) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.12) 1px,
+      transparent 1px
+    );
+  background-size: 100px 100px;
+  mask-image: linear-gradient(
+    90deg,
+    black,
+    transparent 75%
+  );
+}
+
+.kfl-home-hero__glow {
+  background: radial-gradient(
+    ellipse at 88% 65%,
+    rgba(225, 18, 35, 0.2),
+    transparent 48%
+  );
+}
+
+.kfl-home-hero__container {
+  position: relative;
+  width: min(100% - 96px, 1440px);
+  margin: 0 auto;
+  padding: 130px 0 140px;
+}
+
+.kfl-home-hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 1020px;
+}
+
+.kfl-home-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 32px;
+  color: #f0f0f0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.23em;
+  animation: kflHeroRise 0.7s ease both;
+}
+
+.kfl-home-hero__live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--kfl-red);
+  box-shadow: 0 0 18px rgba(237, 38, 47, 0.8);
+}
+
+.kfl-home-hero__eyebrow-line {
+  width: 28px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.kfl-home-hero__heading-wrap {
+  animation: kflHeroRise 0.9s 0.1s ease both;
+}
+
+.kfl-home-hero__outline {
+  display: block;
+  margin-bottom: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: clamp(12px, 1.4vw, 18px);
+  font-weight: 900;
+  letter-spacing: 0.35em;
+}
+
+.kfl-home-hero h1 {
+  margin: 0;
+  max-width: 1100px;
+  color: #fff;
+  font-family: Impact, 'Arial Narrow', sans-serif;
+  font-size: clamp(76px, 9.3vw, 158px);
+  font-weight: 900;
+  line-height: 0.89;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  text-shadow: 0 12px 45px rgba(0, 0, 0, 0.2);
+}
+
+.kfl-home-hero h1 span {
+  display: inline-block;
+  color: var(--kfl-red);
+}
+
+.kfl-home-hero__description {
+  display: flex;
+  align-items: stretch;
+  gap: 22px;
+  max-width: 620px;
+  margin-top: 40px;
+  animation: kflHeroRise 0.9s 0.25s ease both;
+}
+
+.kfl-home-hero__description-line {
+  flex: 0 0 3px;
+  background: var(--kfl-red);
+}
+
+.kfl-home-hero__description p {
+  margin: 0;
+  color: #c8c9ce;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.75;
+}
+
+.kfl-home-hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 38px;
+  animation: kflHeroRise 0.9s 0.4s ease both;
+}
+
+.kfl-home-hero__primary,
+.kfl-home-hero__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  min-height: 62px;
+  padding: 0 27px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.075em;
+  text-decoration: none;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.kfl-home-hero__primary {
+  background: var(--kfl-red);
+  color: #fff;
+  border: 1px solid var(--kfl-red);
+  box-shadow: 0 14px 40px rgba(237, 38, 47, 0.22);
+}
+
+.kfl-home-hero__primary:hover {
+  transform: translateY(-3px);
+  background: #ff3540;
+  color: #fff;
+}
+
+.kfl-home-hero__secondary {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.045);
+  color: #fff;
+  backdrop-filter: blur(12px);
+}
+
+.kfl-home-hero__secondary:hover {
+  transform: translateY(-3px);
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+}
+
+.kfl-home-hero__footnote {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 62px;
+  animation: kflHeroRise 0.9s 0.5s ease both;
+}
+
+.kfl-home-hero__footnote-mark {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-family: Impact, sans-serif;
+  font-size: 24px;
+  font-style: italic;
+}
+
+.kfl-home-hero__footnote strong,
+.kfl-home-hero__footnote small {
+  display: block;
+}
+
+.kfl-home-hero__footnote strong {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+
+.kfl-home-hero__footnote small {
+  margin-top: 5px;
+  color: #999ba3;
+  font-size: 12px;
+}
+
+.kfl-home-hero__side-label {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  writing-mode: vertical-rl;
+}
+
+.kfl-home-hero__scroll {
+  position: absolute;
+  z-index: 3;
+  right: 48px;
+  bottom: 90px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+}
+
+.kfl-home-hero__scroll-line {
+  position: relative;
+  width: 70px;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.kfl-home-hero__scroll-line::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 100%;
+  background: var(--kfl-red);
+  animation: kflScroll 2s linear infinite;
+}
+
+.kfl-home-hero__bottom-bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 48px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  color: #a6a6ac;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+@keyframes kflHeroRise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kflScroll {
+  from {
+    transform: translateX(-35px);
+  }
+  to {
+    transform: translateX(75px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .kfl-home-hero__container {
+    width: calc(100% - 64px);
+  }
+
+  .kfl-home-hero h1 {
+    font-size: clamp(68px, 10vw, 112px);
+  }
+
+  .kfl-home-hero__side-label {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .kfl-home-hero {
+    min-height: 100svh;
+    align-items: flex-end;
+  }
+
+  .kfl-home-hero__container {
+    width: calc(100% - 36px);
+    padding: 140px 0 125px;
+  }
+
+  .kfl-home-hero__poster,
+  .kfl-home-hero__video {
+    object-position: 62% center;
+    background-position: 62% center;
+  }
+
+  .kfl-home-hero__shade {
+    background:
+      linear-gradient(
+        0deg,
+        #08090c 0%,
+        rgba(8, 9, 12, 0.95) 23%,
+        rgba(8, 9, 12, 0.65) 65%,
+        rgba(8, 9, 12, 0.3) 100%
+      );
+  }
+
+  .kfl-home-hero__eyebrow {
+    gap: 9px;
+    margin-bottom: 23px;
+    font-size: 9px;
+    letter-spacing: 0.11em;
+  }
+
+  .kfl-home-hero__eyebrow-line {
+    width: 15px;
+  }
+
+  .kfl-home-hero__outline {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+  }
+
+  .kfl-home-hero h1 {
+    font-size: clamp(47px, 12vw, 76px);
+    line-height: 0.95;
+  }
+
+  .kfl-home-hero__description {
+    gap: 14px;
+    margin-top: 26px;
+  }
+
+  .kfl-home-hero__description p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .kfl-home-hero__actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 27px;
+  }
+
+  .kfl-home-hero__primary,
+  .kfl-home-hero__secondary {
+    width: 100%;
+    min-height: 56px;
+    font-size: 11px;
+  }
+
+  .kfl-home-hero__footnote {
+    margin-top: 35px;
+  }
+
+  .kfl-home-hero__scroll {
+    display: none;
+  }
+
+  .kfl-home-hero__bottom-bar {
+    padding: 17px 18px;
+    font-size: 8px;
+    letter-spacing: 0.06em;
+  }
+
+  .kfl-home-hero__bottom-bar span:last-child {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kfl-home-hero *,
+  .kfl-home-hero *::before,
+  .kfl-home-hero *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

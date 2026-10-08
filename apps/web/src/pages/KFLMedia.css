@@ -1,0 +1,457 @@
+
+.kfl-media-page {
+  --media-red: #ee2737;
+  min-height: 100vh;
+  background: #0b0c10;
+  color: #fff;
+}
+
+.kfl-media-page * {
+  box-sizing: border-box;
+}
+
+.kfl-media-container {
+  width: min(1400px, calc(100% - 80px));
+  margin: 0 auto;
+}
+
+/* HERO */
+
+.kfl-media-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 110px 0 100px;
+  background:
+    radial-gradient(
+      ellipse at 80% 50%,
+      rgba(238, 39, 55, 0.18),
+      transparent 48%
+    ),
+    linear-gradient(125deg, #181920, #090a0d);
+}
+
+.kfl-media-hero::after {
+  content: 'KFL';
+  position: absolute;
+  right: -25px;
+  bottom: -70px;
+  font: 900 clamp(180px, 30vw, 430px)/1 Impact, sans-serif;
+  color: rgba(255, 255, 255, 0.035);
+  pointer-events: none;
+}
+
+.kfl-media-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--media-red);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.kfl-media-hero h1 {
+  position: relative;
+  z-index: 1;
+  margin: 25px 0;
+  font: 900 clamp(75px, 12vw, 165px)/0.9
+    Impact, 'Arial Narrow', sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.kfl-media-hero h1 span {
+  color: var(--media-red);
+}
+
+.kfl-media-hero p {
+  position: relative;
+  z-index: 1;
+  max-width: 580px;
+  color: #b1b2bd;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* SECTION */
+
+.kfl-media-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 70px 0 28px;
+}
+
+.kfl-media-section-heading h2 {
+  margin: 12px 0 0;
+  color: #fff;
+  font: 900 clamp(34px, 4.5vw, 60px)/1
+    Impact, sans-serif;
+}
+
+.kfl-media-section-heading__count {
+  color: #9b9ca7;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+/* FILTERS */
+
+.kfl-media-filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 0 18px;
+  margin-bottom: 20px;
+  scrollbar-width: thin;
+}
+
+.kfl-media-filters button {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #191a20;
+  color: #c4c4ce;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.kfl-media-filters button:hover {
+  border-color: var(--media-red);
+  color: #fff;
+}
+
+.kfl-media-filters button.is-active {
+  border-color: var(--media-red);
+  background: var(--media-red);
+  color: #fff;
+}
+
+/* MEDIA CARDS */
+
+.kfl-media-content {
+  padding-bottom: 100px;
+}
+
+.kfl-media-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #191a20;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    transform 0.25s,
+    border-color 0.25s;
+}
+
+.kfl-media-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(238, 39, 55, 0.7);
+  color: #fff;
+}
+
+.kfl-media-card__visual {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+  background: #24252c;
+}
+
+.kfl-media-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kfl-media-image--empty {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle,
+      rgba(238, 39, 55, 0.2),
+      transparent 70%
+    ),
+    #22232b;
+  color: rgba(255, 255, 255, 0.13);
+  font: 900 110px Impact, sans-serif;
+}
+
+.kfl-media-card__category {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 10px 13px;
+  background: var(--media-red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.kfl-media-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 27px;
+}
+
+.kfl-media-card h3 {
+  margin: 13px 0 15px;
+  color: #fff;
+  font: 900 clamp(26px, 2.8vw, 38px)/1.08
+    Impact, sans-serif;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.kfl-media-card p {
+  margin: 0 0 25px;
+  color: #a9aab4;
+  font-size: 13px;
+  line-height: 1.75;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.kfl-media-card__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 10px;
+  font-weight: 900;
+  color: #a5a6b0;
+}
+
+.kfl-media-card__bottom span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+}
+
+/* FEATURED ARTICLE */
+
+.kfl-media-card--featured {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  min-height: 430px;
+  margin-bottom: 20px;
+}
+
+.kfl-media-card--featured .kfl-media-card__visual {
+  height: 100%;
+  min-height: 430px;
+}
+
+.kfl-media-card--featured .kfl-media-card__body {
+  justify-content: center;
+  padding: 45px;
+}
+
+.kfl-media-card--featured h3 {
+  font-size: clamp(40px, 5vw, 70px);
+}
+
+/* GRID */
+
+.kfl-media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.kfl-media-empty {
+  padding: 70px 0 100px;
+}
+
+/* ARTICLE DETAIL */
+
+.kfl-media-detail {
+  padding-bottom: 110px;
+}
+
+.kfl-media-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 55px;
+  color: #b3b4bd;
+  font-size: 11px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.kfl-media-back:hover {
+  color: #fff;
+}
+
+.kfl-media-detail__header {
+  max-width: 1000px;
+  margin: 0 auto 45px;
+}
+
+.kfl-media-detail__header h1 {
+  margin: 18px 0 25px;
+  color: #fff;
+  font: 900 clamp(45px, 7vw, 100px)/0.98
+    Impact, sans-serif;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.kfl-media-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  color: #a9aab4;
+  font-size: 13px;
+}
+
+.kfl-media-detail__meta a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.kfl-media-detail__cover {
+  width: 100%;
+  height: min(55vw, 650px);
+  min-height: 280px;
+  overflow: hidden;
+  background: #22232b;
+}
+
+.kfl-media-detail__content {
+  max-width: 820px;
+  margin: 55px auto 0;
+  color: #d1d1d8;
+}
+
+.kfl-media-detail__lead {
+  font-size: clamp(19px, 2.5vw, 27px);
+  line-height: 1.55;
+  color: #fff;
+  font-weight: 700;
+}
+
+.kfl-media-detail__prose {
+  margin-top: 30px;
+  font-size: 16px;
+  line-height: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.kfl-media-detail__return {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 55px;
+  padding: 16px 22px;
+  background: var(--media-red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.kfl-media-detail__return:hover {
+  color: #fff;
+  background: #cb1f2d;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+  .kfl-media-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .kfl-media-container {
+    width: calc(100% - 32px);
+  }
+
+  .kfl-media-hero {
+    padding: 75px 0 65px;
+  }
+
+  .kfl-media-hero h1 {
+    font-size: clamp(65px, 14vw, 100px);
+  }
+
+  .kfl-media-hero p {
+    font-size: 14px;
+  }
+
+  .kfl-media-section-heading {
+    margin-top: 48px;
+  }
+
+  .kfl-media-section-heading__count {
+    font-size: 9px;
+  }
+
+  .kfl-media-card--featured {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kfl-media-card--featured .kfl-media-card__visual {
+    min-height: 0;
+    height: 280px;
+  }
+
+  .kfl-media-card--featured .kfl-media-card__body {
+    padding: 27px;
+  }
+
+  .kfl-media-card--featured h3 {
+    font-size: 38px;
+  }
+
+  .kfl-media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kfl-media-detail__header h1 {
+    font-size: clamp(42px, 10vw, 65px);
+  }
+
+  .kfl-media-detail__cover {
+    height: 280px;
+  }
+
+  .kfl-media-detail__content {
+    margin-top: 35px;
+  }
+
+  .kfl-media-card__visual {
+    height: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kfl-media-card,
+  .kfl-media-filters button {
+    transition: none;
+  }
+}

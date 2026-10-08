@@ -1,0 +1,362 @@
+
+.kfl-ranking-list {
+  width: 100%;
+  color: #fff;
+}
+
+.kfl-ranking-list * {
+  box-sizing: border-box;
+}
+
+.kfl-ranking-list__header,
+.kfl-ranking-entry {
+  display: grid;
+  grid-template-columns:
+    105px minmax(220px, 1fr) 100px 125px 125px;
+  align-items: center;
+  gap: 18px;
+}
+
+.kfl-ranking-list__header {
+  padding: 18px 24px;
+  color: #92939e;
+  background: #111217;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.kfl-ranking-list__body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 0;
+}
+
+.kfl-ranking-entry {
+  position: relative;
+  min-width: 0;
+  min-height: 106px;
+  padding: 15px 24px;
+  background: #1b1c23;
+  border: 1px solid transparent;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.kfl-ranking-entry:hover {
+  background: #25262e;
+  border-color: rgba(237, 38, 54, 0.35);
+}
+
+.kfl-ranking-entry--top {
+  background: #202128;
+}
+
+.kfl-ranking-entry--leader {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(237, 38, 54, 0.16),
+      transparent 65%
+    ),
+    #202128;
+  border-left: 3px solid #ed2636;
+}
+
+.kfl-ranking-entry__position {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.kfl-ranking-entry__position strong {
+  color: #8e909b;
+  font-family: Impact, 'Arial Narrow', sans-serif;
+  font-size: 43px;
+  line-height: 1;
+}
+
+.kfl-ranking-entry--top
+.kfl-ranking-entry__position strong {
+  color: #fff;
+}
+
+.kfl-ranking-entry--leader
+.kfl-ranking-entry__position strong {
+  color: #ed2636;
+}
+
+.kfl-ranking-entry__crown {
+  color: #e8bf74;
+  font-size: 18px;
+}
+
+.kfl-ranking-entry__athlete {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  color: #fff;
+  text-decoration: none;
+}
+
+.kfl-ranking-entry__athlete:hover {
+  color: #fff;
+}
+
+.kfl-ranking-entry__photo {
+  width: 66px;
+  height: 72px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #30313a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kfl-ranking-entry__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kfl-ranking-entry__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.kfl-ranking-entry__identity > strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.35;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.kfl-ranking-entry__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.kfl-ranking-entry__champion {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 5px 8px;
+  background: rgba(232, 191, 116, 0.13);
+  color: #e8bf74;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.kfl-ranking-entry__top-label {
+  display: inline-flex;
+  padding: 5px 8px;
+  background: rgba(237, 38, 54, 0.12);
+  color: #ed2636;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.kfl-ranking-entry__arrow {
+  margin-left: auto;
+  color: #777985;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateX(-5px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.kfl-ranking-entry:hover
+.kfl-ranking-entry__arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.kfl-ranking-entry__record strong {
+  color: #e8e8ec;
+  font-size: 19px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.kfl-ranking-entry__record strong span {
+  margin: 0 5px;
+  color: #777985;
+}
+
+.kfl-ranking-entry__points {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.kfl-ranking-entry__points strong {
+  color: #fff;
+  font-family: Impact, sans-serif;
+  font-size: 30px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kfl-ranking-entry--leader
+.kfl-ranking-entry__points strong {
+  color: #ed2636;
+}
+
+.kfl-ranking-entry__points small {
+  color: #858793;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.kfl-ranking-entry__movement {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.kfl-ranking-entry__mobile-label {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .kfl-ranking-list__header,
+  .kfl-ranking-entry {
+    grid-template-columns:
+      70px minmax(180px, 1fr) 80px 95px 100px;
+    gap: 12px;
+  }
+
+  .kfl-ranking-entry {
+    padding: 15px;
+  }
+
+  .kfl-ranking-list__header {
+    padding: 16px 15px;
+  }
+
+  .kfl-ranking-entry__position strong {
+    font-size: 36px;
+  }
+
+  .kfl-ranking-entry__photo {
+    width: 55px;
+    height: 62px;
+  }
+}
+
+@media (max-width: 760px) {
+  .kfl-ranking-list__header {
+    display: none;
+  }
+
+  .kfl-ranking-list__body {
+    gap: 10px;
+    padding: 0;
+  }
+
+  .kfl-ranking-entry {
+    grid-template-columns: 55px minmax(0, 1fr);
+    gap: 15px 12px;
+    padding: 18px 14px;
+    min-height: 0;
+  }
+
+  .kfl-ranking-entry__position {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .kfl-ranking-entry__position strong {
+    font-size: 38px;
+  }
+
+  .kfl-ranking-entry__athlete {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 12px;
+  }
+
+  .kfl-ranking-entry__photo {
+    width: 60px;
+    height: 66px;
+  }
+
+  .kfl-ranking-entry__identity > strong {
+    font-size: 13px;
+  }
+
+  .kfl-ranking-entry__arrow {
+    display: none;
+  }
+
+  .kfl-ranking-entry__record,
+  .kfl-ranking-entry__points,
+  .kfl-ranking-entry__movement {
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  .kfl-ranking-entry__record {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .kfl-ranking-entry__points {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .kfl-ranking-entry__movement {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  .kfl-ranking-entry__mobile-label {
+    display: block;
+    color: #92939e;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+  }
+
+  .kfl-ranking-entry__record strong {
+    font-size: 17px;
+  }
+
+  .kfl-ranking-entry__points strong {
+    font-size: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kfl-ranking-entry,
+  .kfl-ranking-entry__arrow {
+    transition: none;
+  }
+}
