@@ -1,0 +1,409 @@
+
+/* =========================================
+   KFL CONTROL CENTER — PROFESSIONAL EDITOR
+   ========================================= */
+
+.kfl-editor-drawer .ant-drawer-content {
+  background: #15171d;
+}
+
+.kfl-editor-drawer .ant-drawer-body {
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.kfl-editor-drawer .ant-drawer-content-wrapper {
+  max-width: 100vw;
+}
+
+.kfl-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  color: #f4f4f5;
+}
+
+/* Header */
+
+.kfl-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 32px;
+  border-bottom: 1px solid #30333d;
+  background: #181a21;
+  flex-shrink: 0;
+}
+
+.kfl-editor-heading {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 16px;
+}
+
+.kfl-editor-heading-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.kfl-editor-heading .ant-typography {
+  margin: 0;
+}
+
+.kfl-editor-heading .ant-typography.ant-typography {
+  color: #f5f5f6;
+}
+
+.kfl-editor-eyebrow {
+  display: block;
+  margin-bottom: 5px !important;
+  color: #a1a1aa !important;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.kfl-editor-heading h3.ant-typography {
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.3;
+  font-weight: 750;
+}
+
+.kfl-editor-header .ant-btn-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #d4d4d8;
+  border-radius: 10px;
+}
+
+.kfl-editor-header .ant-btn-text:hover {
+  color: #fff !important;
+  background: #282b34 !important;
+}
+
+/* Content */
+
+.kfl-editor-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #555864 transparent;
+}
+
+.kfl-editor-content.has-aside {
+  grid-template-columns: minmax(0, 1fr) 290px;
+}
+
+.kfl-editor-main {
+  min-width: 0;
+  padding: 32px;
+}
+
+.kfl-editor-aside {
+  min-width: 0;
+  padding: 32px 24px;
+  border-left: 1px solid #30333d;
+  background: #191b23;
+}
+
+/* Footer */
+
+.kfl-editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+  padding: 18px 32px;
+  border-top: 1px solid #30333d;
+  background: #181a21;
+}
+
+.kfl-editor-footer-note {
+  color: #858895;
+  font-size: 12px;
+}
+
+.kfl-editor-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kfl-editor-footer-actions .ant-btn {
+  min-height: 42px;
+  padding-inline: 20px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.kfl-editor-footer-actions .ant-btn-primary {
+  background: #cf2034;
+  border-color: #cf2034;
+  box-shadow: none;
+}
+
+.kfl-editor-footer-actions .ant-btn-primary:not(:disabled):hover {
+  background: #e02a40;
+  border-color: #e02a40;
+}
+
+/* Forms */
+
+.kfl-editor-drawer .kfl-professional-form {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.kfl-editor-drawer .kfl-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+  align-items: start;
+}
+
+.kfl-editor-drawer .kfl-form-grid > .wide {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.kfl-editor-drawer .kfl-form-section {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 22px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid #343741;
+  color: #f5f5f6;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.kfl-editor-drawer .kfl-form-section:first-child {
+  margin-top: 0;
+}
+
+.kfl-editor-drawer .ant-form-item {
+  min-width: 0;
+  margin-bottom: 20px;
+}
+
+.kfl-editor-drawer .ant-form-item-label {
+  padding-bottom: 7px;
+}
+
+.kfl-editor-drawer .ant-form-item-label > label {
+  height: auto;
+  color: #e4e4e7;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.kfl-editor-drawer .ant-input,
+.kfl-editor-drawer .ant-input-affix-wrapper,
+.kfl-editor-drawer .ant-input-number,
+.kfl-editor-drawer .ant-picker,
+.kfl-editor-drawer .ant-select-selector {
+  min-height: 42px;
+  border-radius: 9px;
+}
+
+.kfl-editor-drawer .ant-select,
+.kfl-editor-drawer .ant-picker,
+.kfl-editor-drawer .ant-input-number {
+  width: 100%;
+}
+
+.kfl-editor-drawer .ant-input,
+.kfl-editor-drawer .ant-input-affix-wrapper,
+.kfl-editor-drawer .ant-picker {
+  padding-inline: 13px;
+}
+
+.kfl-editor-drawer .ant-input-textarea textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.kfl-editor-drawer .ant-form-item-explain-error {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.kfl-editor-drawer .kfl-form-note {
+  grid-column: 1 / -1;
+  margin: 0 0 20px;
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Image upload */
+
+.kfl-editor-drawer .kfl-image-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  min-height: 140px;
+  padding: 20px;
+  border: 1px dashed #454956;
+  border-radius: 14px;
+  background: #1b1e26;
+}
+
+.kfl-editor-drawer .kfl-image-field img {
+  width: 112px;
+  height: 112px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #3a3e49;
+}
+
+.kfl-editor-drawer .kfl-image-field > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 0;
+}
+
+.kfl-editor-drawer .kfl-image-field small {
+  color: #999da9;
+  font-size: 12px;
+}
+
+.kfl-editor-drawer .kfl-file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #555966;
+  border-radius: 9px;
+  background: #292d37;
+  color: #f5f5f6;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.kfl-editor-drawer .kfl-file-button:hover {
+  background: #363b47;
+}
+
+.kfl-editor-drawer .kfl-file-button input[type="file"] {
+  display: none;
+}
+
+/* Optional reusable sections */
+
+.kfl-editor-section {
+  margin-bottom: 22px;
+  padding: 24px;
+  border: 1px solid #30333d;
+  border-radius: 16px;
+  background: #1b1e26;
+}
+
+.kfl-editor-section-title {
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kfl-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+}
+
+/* Responsive */
+
+@media (max-width: 850px) {
+  .kfl-editor-content.has-aside {
+    grid-template-columns: 1fr;
+  }
+
+  .kfl-editor-aside {
+    border-left: 0;
+    border-top: 1px solid #30333d;
+  }
+
+  .kfl-editor-main {
+    padding: 24px;
+  }
+
+  .kfl-editor-header,
+  .kfl-editor-footer {
+    padding: 18px 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .kfl-editor-drawer .kfl-form-grid,
+  .kfl-editor-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .kfl-editor-drawer .kfl-form-grid > .wide,
+  .kfl-editor-drawer .kfl-form-section {
+    grid-column: 1;
+  }
+
+  .kfl-editor-main {
+    padding: 20px 16px;
+  }
+
+  .kfl-editor-header {
+    padding: 16px;
+  }
+
+  .kfl-editor-footer {
+    padding: 14px 16px;
+  }
+
+  .kfl-editor-footer-note {
+    display: none;
+  }
+
+  .kfl-editor-footer-actions {
+    width: 100%;
+  }
+
+  .kfl-editor-footer-actions .ant-btn {
+    flex: 1;
+    padding-inline: 10px;
+  }
+
+  .kfl-editor-heading {
+    gap: 8px;
+  }
+
+  .kfl-editor-drawer .kfl-image-field {
+    padding: 16px;
+  }
+
+  .kfl-editor-section {
+    padding: 16px;
+  }
+}
+
+.kfl-division-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.kfl-division-cards article,.kfl-profile-preview{padding:24px;border:1px solid #383b48;background:#1b1d26;border-radius:16px}.kfl-division-cards strong{font-size:56px;color:#ef233c}.kfl-division-cards p{color:#b9bdc8}.kfl-profile-preview{margin-bottom:16px}@media(max-width:600px){.kfl-division-cards{grid-template-columns:1fr}}

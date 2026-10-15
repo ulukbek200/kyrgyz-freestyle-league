@@ -1,20 +1,31 @@
 {
-  "name": "wrestling-league",
+  "name": "nomad-wrestling-league",
   "private": true,
+  "version": "1.0.0",
   "workspaces": [
-    "apps/*"
+    "apps/web",
+    "apps/api"
   ],
   "scripts": {
-    "db:up": "docker compose up -d",
-    "db:migrate": "npm run db:migrate -w @league/api",
-    "db:seed": "npm run db:seed -w @league/api",
-    "dev:api": "npm run dev -w @league/api",
-    "dev:web": "npm run dev -w @league/web",
-    "build": "npm run build -w @league/api && npm run build -w @league/web",
-    "test": "npm run test -w @league/api",
-    "test:unit": "npm run test:unit -w @league/api",
-    "test:integration": "npm run test:integration -w @league/api",
-    "typecheck": "npm run typecheck -w @league/api && npm run typecheck -w @league/web",
-    "db:deploy": "npm run db:deploy -w @league/api"
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:editor": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-editor-dev.ps1",
+    "dev:api": "npm --workspace apps/api run dev",
+    "db:generate": "npm --workspace apps/api run db:generate",
+    "db:migrate": "npm --workspace apps/api run db:migrate",
+    "db:seed": "npm --workspace apps/api run db:seed",
+    "build": "npm --workspace apps/api run build && npm --workspace apps/web run build",
+    "test": "npm --workspace apps/api test",
+    "typecheck": "npm --workspace apps/api run typecheck && npm --workspace apps/web exec -- tsc --noEmit -p tsconfig.json",
+    "db:deploy": "npm --workspace apps/api run db:deploy",
+    "db:validate": "npm --workspace apps/api run db:validate",
+    "db:local:check": "npm --workspace apps/api run db:local:check",
+    "db:local:deploy": "npm --workspace apps/api run db:local:deploy",
+    "db:local:verify": "npm --workspace apps/api run db:local:verify",
+    "test:integration": "npm --workspace apps/api run test:integration",
+    "test:browser": "npm --workspace apps/api run test:browser:prepare && npm --workspace apps/web run test:browser"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

@@ -1,3 +1,4 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 Disallow: /admin
+Sitemap: https://nomadleague.kg/sitemap.xml

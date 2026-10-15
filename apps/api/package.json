@@ -1,48 +1,48 @@
 {
-  "name": "@league/api",
+  "name": "@nomad/api",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc",
-    "start": "node dist/server.js",
-    "db:migrate": "prisma migrate dev --name init",
-    "db:deploy": "prisma migrate deploy",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/src/server.js",
+    "db:generate": "tsx scripts/prisma.ts generate",
+    "db:migrate": "tsx scripts/prisma.ts migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "typecheck": "tsc --noEmit",
-    "test": "npm run test:unit && npm run test:integration",
-    "test:unit": "node --import tsx --test tests/unit.test.ts tests/competition.unit.test.ts",
-    "test:integration": "node tests/run-integration.cjs",
-    "db:format": "prisma format",
-    "db:validate": "prisma validate",
-    "db:generate": "prisma generate",
-    "db:check": "tsx scripts/check-data.ts",
-    "db:rebuild": "tsx scripts/rebuild-derived.ts"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "test": "tsx --test tests/auth.test.ts tests/rules.test.ts tests/results.test.ts tests/http.test.ts tests/env.test.ts tests/ageDivisions.test.ts tests/tournaments.test.ts tests/loginSecurity.test.ts tests/groupSchedule.test.ts tests/groupStandings.test.ts tests/team.test.ts",
+    "test:postgres:legacy": "tsx --test tests/postgres.test.ts",
+    "db:deploy": "tsx scripts/prisma.ts migrate deploy",
+    "db:validate": "tsx scripts/prisma.ts validate",
+    "test:integration": "tsx --test tests/api.integration.ts",
+    "test:tournament": "tsx --test tests/tournamentSystem.integration.ts",
+    "db:local:check": "tsx scripts/local-database.ts check",
+    "db:local:deploy": "tsx scripts/local-database.ts deploy",
+    "test:browser:prepare": "tsx scripts/browser-fixture.ts",
+    "db:local:verify": "tsx scripts/verify-local-schema.ts",
+    "admin:bootstrap": "tsx scripts/bootstrap-admin.ts",
+    "test:team": "tsx scripts/team-checks.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.0",
-    "express-rate-limit": "^7.4.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/multer": "^1.4.12",
-    "@types/node": "^22.7.0",
-    "prisma": "^5.22.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
+    "@types/node": "^22.13.4",
+    "prisma": "^6.3.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }

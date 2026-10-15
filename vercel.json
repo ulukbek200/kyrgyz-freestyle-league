@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "git": {"deploymentEnabled": {"kfl-online-launch": false}},
+  "installCommand": "npm ci --include=dev",
+  "buildCommand": "npm --workspace apps/web run build",
+  "outputDirectory": "apps/web/dist",
+  "rewrites": [{"source": "/(.*)", "destination": "/index.html"}]
+}

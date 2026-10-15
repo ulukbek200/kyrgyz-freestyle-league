@@ -1,0 +1,173 @@
+
+.kfl-simple-wizard .ant-modal-content {
+  background: #16171d;
+  border: 1px solid #343540;
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.kfl-simple-wizard .ant-modal-title {
+  background: transparent;
+}
+
+.kfl-wizard-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.kfl-wizard-heading svg {
+  color: #ee2737;
+}
+
+.kfl-simple-wizard .ant-steps {
+  margin: 28px 0;
+}
+
+.kfl-wizard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 230px;
+}
+
+.kfl-wizard-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #343540;
+  border-radius: 10px;
+  background: #202128;
+}
+
+.kfl-wizard-intro > svg {
+  flex-shrink: 0;
+  color: #ee2737;
+}
+
+.kfl-wizard-intro h3 {
+  margin: 0 0 7px;
+  color: #fff;
+  font-size: 19px;
+}
+
+.kfl-wizard-intro p {
+  margin: 0;
+  color: #a4a5af;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.kfl-wizard-content > .ant-select {
+  width: 100%;
+}
+
+.kfl-wizard-content > .ant-btn {
+  align-self: flex-start;
+}
+
+.kfl-wizard-inline-actions,
+.kfl-wizard-footer,
+.kfl-wizard-success-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.kfl-wizard-inline-actions {
+  margin-top: 20px;
+}
+
+.kfl-wizard-footer {
+  justify-content: space-between;
+  padding-top: 22px;
+  margin-top: 25px;
+  border-top: 1px solid #343540;
+}
+
+.kfl-wizard-footer .ant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kfl-wizard-event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+  background: #24252d;
+  border-left: 3px solid #ee2737;
+  border-radius: 5px;
+}
+
+.kfl-wizard-event-info span {
+  color: #8e909e;
+  font-size: 10px;
+  letter-spacing: .1em;
+}
+
+.kfl-wizard-event-info strong {
+  color: #fff;
+  font-size: 15px;
+}
+
+.kfl-wizard-fighters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.kfl-wizard-fighters .ant-form-item {
+  min-width: 0;
+}
+
+.kfl-wizard-vs {
+  color: #ee2737;
+  font-family: Impact, sans-serif;
+  font-size: 24px;
+  text-align: center;
+}
+
+.kfl-wizard-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 35px 10px;
+}
+
+.kfl-wizard-success > svg {
+  color: #d2a44b;
+}
+
+.kfl-wizard-success-actions {
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .kfl-simple-wizard .ant-modal-content {
+    padding: 20px 15px;
+  }
+
+  .kfl-wizard-fighters {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .kfl-wizard-vs {
+    margin-bottom: 16px;
+  }
+
+  .kfl-wizard-footer .ant-btn {
+    font-size: 12px;
+  }
+}

@@ -1,158 +1,53 @@
-import { FormSelect as Select } from '../../components/FormSelect';
-import { lazy, Suspense, useState } from 'react';
-import { Link, Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { App as AntApp, Button, Card, DatePicker, Form, Input, InputNumber, Layout, Menu, Modal, Drawer, Dropdown, Alert, Popconfirm, Space, Table, Tag, Upload, message } from 'antd';
-import { api, errMsg, get } from '../../api/client';
-import { useAuth } from '../../store/auth';
-import { fmt, fullName } from '../../components/ui';
-import { SeasonRoster, AthleteHistory } from './Management';
-import dayjs from 'dayjs';
-import { QueryState, QueryError } from '../../components/feedback';
-import { useAdminSave as useSave } from './useAdminSave';
-const MediaAdmin=lazy(()=>import('./MediaAdmin'));
-const MatchesAdmin=lazy(()=>import('./MatchesAdmin'));
-import { Loading } from '../../components/ui';
-import { EventsAdmin, ApplicationsAdmin, Directory, Settings } from './Operations';
-import KFLAdminDashboard from './KFLAdminDashboard';
+import Registrar from './Registrar';
+import {useCallback,useEffect,useState} from 'react';
+import {App as AntApp,Button,ConfigProvider,Drawer,Tag,theme} from 'antd';
+import ruRU from 'antd/locale/ru_RU';
+import {Link,NavLink,Navigate,Route,Routes,useLocation} from 'react-router-dom';
+import {useQueryClient} from '@tanstack/react-query';
+import {Activity,ArrowUpRight,Building2,CalendarDays,ChevronRight,ClipboardList,Image,LayoutDashboard,LogOut,Menu,Settings,Shield,SlidersHorizontal,Swords,Trophy,Users,UserRound} from 'lucide-react';
+import {Session,useAdminQuery,formatDate,type Row} from './api';
+import {DataState,PageTitle} from './components';
+import Login from './Login';
+import {AthletesAdmin,DirectoryAdmin,EventsAdmin} from './Management';
+import TournamentDetails from './TournamentDetails';
+import MediaAdmin from './MediaAdmin';
+import SeasonsAdmin from './SeasonsAdmin';
+import {ApplicationsAdmin,ChampionsAdmin,RankingsAdmin,SettingsAdmin} from './Operations';
+import './admin.css';
 
-const METHODS = ['POINTS', 'TECHNICAL_SUPERIORITY', 'PIN', 'FORFEIT', 'DISQUALIFICATION', 'INJURY'];
-const opt = (a: string[]) => a.map((v) => ({ value: v, label: v }));
+const groups=[{label:'ОБЗОР',items:[{path:'',label:'Dashboard',icon:LayoutDashboard}]},{label:'УПРАВЛЕНИЕ ЛИГОЙ',items:[{path:'athletes',label:'Спортсмены',icon:Users},{path:'events',label:'Турниры',icon:CalendarDays},{path:'seasons',label:'Сезоны KFL',icon:CalendarDays},{path:'rankings',label:'Рейтинги',icon:Activity},{path:'champions',label:'Чемпионы',icon:Trophy}]},{label:'КОНТЕНТ',items:[{path:'media',label:'Медиа',icon:Image},{path:'applications',label:'Заявки',icon:ClipboardList}]},{label:'СИСТЕМА',items:[{path:'clubs',label:'Клубы',icon:Building2},{path:'coaches',label:'Тренеры',icon:UserRound},{path:'users',label:'Пользователи',icon:Shield},{path:'settings',label:'Настройки',icon:Settings}]}];
+const quick=[{label:'Добавить спортсмена',detail:'Новый профиль в составе',path:'athletes',icon:Users},{label:'Создать турнир',detail:'Следующее событие лиги',path:'events',icon:CalendarDays},{label:'Загрузить медиа',detail:'История, которую увидят',path:'media',icon:Image}];
 
-function ImageField({ value, onChange, id }: { value?: string; onChange?: (v: string) => void; id?: string }) {
-  const [busy, setBusy] = useState(false);
-  return (
-    <Space>
-      {value && <img src={value} alt="" style={{ width: 56, height: 70, objectFit: 'cover' }} />}
-      <Upload showUploadList={false} accept="image/jpeg,image/png,image/webp" customRequest={async ({ file }: any) => {
-        setBusy(true);
-        try { const fd = new FormData(); fd.append('file', file); onChange?.((await api.post('/admin/upload', fd)).data.url); }
-        catch (e) { message.error(errMsg(e)); }
-        setBusy(false);
-      }}><Button id={id} loading={busy}>Загрузить фото</Button></Upload>
-      {value && <Button type="link" onClick={() => onChange?.('')}>убрать</Button>}
-    </Space>
-  );
+function Dashboard(){
+  const query=useAdminQuery<Row>('dashboard','/admin/dashboard'),d=query.data;
+  const stat=[{label:'СПОРТСМЕНЫ',value:d?.totalAthletes,detail:`${d?.athletes??'—'} в активном составе`,icon:Users,path:'athletes'},
+    {label:'ТУРНИРЫ',value:d?.events,detail:'Соревнования лиги',icon:CalendarDays,path:'events'},{label:'ПРОВЕДЕНО СХВАТОК',value:d?.completed,detail:'Подтверждённые результаты',icon:Swords,path:'events'},
+    {label:'НОВЫЕ ЗАЯВКИ',value:d?.applications,detail:'Ожидают решения команды',icon:ClipboardList,path:'applications'}];
+  const actions:Record<string,string>={CREATE:'Создана запись',UPDATE:'Обновлена запись',SET_RESULT:'Сохранён результат',CANCEL_RESULT:'Отменён результат',UPDATE_APPLICATION:'Рассмотрена заявка',ACTIVATE:'Активирован сезон',RECALCULATE:'Пересчитан рейтинг',DELETE:'Удалена запись'};
+  const entities:Record<string,string>={Athlete:'Спортсмен',Match:'Схватка',Application:'Заявка',Season:'Сезон',Event:'Турнир',MediaPost:'Публикация',Club:'Клуб',Coach:'Тренер',User:'Пользователь',Ranking:'Рейтинг'};
+  return <><PageTitle title="Вся лига. Один центр" eyebrow="KFL / CONTROL CENTER 3.0" description="Главное о лиге — здесь. Решения, которые двигают её вперёд." action={<Link className="kfl-outline-link" to="/" target="_blank" rel="noreferrer">Публичный сайт <ArrowUpRight size={16}/></Link>}/>
+    <DataState query={query}><div className="kfl-stats">{stat.map(({icon:Icon,...s},i)=><Link className={`kfl-stat ${i===3?'accent':''}`} key={s.label} to={'/admin/'+s.path}><div><span>{s.label}</span><Icon size={18}/></div><strong>{s.value??'—'}</strong><footer>{s.detail}<ArrowUpRight size={17}/></footer></Link>)}</div>
+      <div className="kfl-dashboard-grid"><section className="kfl-season-spotlight"><div className="kfl-spotlight-top"><Tag color="red">ТУРНИРЫ KFL</Tag><CalendarDays size={26}/></div><span className="kfl-eyebrow">THE NEXT CHAPTER</span><h2>{d?.nextEvents?.[0]?.name||'СЛЕДУЮЩИЙ ТУРНИР'}</h2><p>Создавайте турниры и приглашайте спортсменов из общего реестра.</p><div className="kfl-season-facts"><div><b>{d?.upcoming??0}</b><span>предстоящих схваток</span></div><div><b>{d?.champions??0}</b><span>действующих чемпионов</span></div></div><Link to="/admin/events">Управление турнирами <ArrowUpRight size={18}/></Link><span className="kfl-watermark" aria-hidden="true">KFL</span></section>
+      <section className="kfl-panel kfl-quick"><div className="kfl-panel-header"><h2>Быстрые действия</h2><SlidersHorizontal size={17}/></div>{quick.map(({icon:Icon,...a})=><Link to={`/admin/${a.path}?new=1`} key={a.path}><span className="kfl-quick-icon"><Icon size={20}/></span><div><strong>{a.label}</strong><small>{a.detail}</small></div><ChevronRight size={17}/></Link>)}</section></div>
+      <div className="kfl-dashboard-bottom"><section className="kfl-panel"><div className="kfl-panel-header"><h2>Последняя активность</h2><span className="kfl-live-label">ЖУРНАЛ ЛИГИ</span></div>{d?.activity.length?<div className="kfl-activity">{d.activity.map((a:Row)=><div key={a.id}><span className="kfl-activity-dot"/><div><strong>{actions[a.action]||'Действие администратора'}<span> · {entities[a.entity]||'Лига'}</span></strong><small>{a.user?.email||'Система'}</small></div><time>{new Date(a.createdAt).toLocaleString('ru-RU',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</time></div>)}</div>:<p className="kfl-empty-copy">Здесь появятся действия команды после первых изменений.</p>}</section>
+      <section className="kfl-panel"><div className="kfl-panel-header"><h2>На горизонте</h2><Link to="/admin/events"><ArrowUpRight size={18}/></Link></div>{d?.nextEvents.length?d.nextEvents.map((e:Row)=><Link className="kfl-next-event" key={e.id} to={`/admin/events/${e.id}`}><div className="kfl-date-tile"><b>{new Date(e.startsAt).getDate()}</b><small>{new Date(e.startsAt).toLocaleDateString('ru-RU',{month:'short'})}</small></div><div><strong>{e.name}</strong><small>{e.venue} · {e._count.matches} схваток</small></div><ChevronRight size={17}/></Link>):<div className="kfl-empty-copy"><CalendarDays size={28}/><p>Новых турниров пока нет.</p><Link to="/admin/events?new=1">Запланировать событие →</Link></div>}<div className="kfl-completion"><div><span>Завершено схваток</span><b>{d?.completed} / {d?.matches}</b></div><div className="kfl-progress"><i style={{width:`${d?.matches?Math.min(100,d.completed/d.matches*100):0}%`}}/></div></div></section></div>
+    </DataState></>;
 }
 
-function PhotoCell({ a, save }: { a: any; save: any }) {
-  return <ImageField value={a.photoUrl} onChange={(url) => save.mutate({ method: 'patch', url: `/athletes/${a.id}`, data: { photoUrl: url } })} />;
+function Workspace({logout}:{logout:()=>void}){
+  const[mobile,setMobile]=useState(false),location=useLocation(),query=useAdminQuery<Row>('session','/admin/session');
+  const segment=location.pathname.split('/')[2]||'',current=groups.flatMap(g=>g.items).find(i=>i.path===segment)?.label||'Dashboard';
+  useEffect(()=>{setMobile(false);},[location.pathname]);
+  if(query.data?.role==='REGISTRAR')return <Registrar email={query.data.email} logout={logout}/>;
+  const navigation=<><Link className="kfl-brand" to="/admin"><b>KFL<span>®</span></b><small>CONTROL CENTER <span>3.0</span></small></Link><nav aria-label="Разделы управления">{groups.map(g=><div className="kfl-nav-group" key={g.label}><span>{g.label}</span>{g.items.map(({icon:Icon,...item})=><NavLink key={item.path} to={'/admin'+(item.path?'/'+item.path:'')} end={!item.path}><Icon size={17}/>{item.label}</NavLink>)}</div>)}</nav><div className="kfl-sidebar-bottom"><span className="kfl-user-avatar">{query.data?.email?.[0]?.toUpperCase()||'A'}</span><div><strong>Администратор</strong><small title={query.data?.email}>{query.data?.email||'—'}</small></div><Button type="text" aria-label="Выйти" title="Выйти" icon={<LogOut size={17}/>} onClick={logout}/></div></>;
+  return <div className="kfl-workspace"><aside className="kfl-sidebar">{navigation}</aside><Drawer rootClassName="kfl-navigation-drawer" placement="left" width={280} open={mobile} onClose={()=>setMobile(false)} title="Управление лигой">{navigation}</Drawer><div className="kfl-main"><header className="kfl-topbar"><div><Button className="kfl-mobile-toggle" type="text" aria-label="Открыть меню" icon={<Menu size={21}/>} onClick={()=>setMobile(true)}/><Link to="/admin">Центр управления</Link><ChevronRight size={13}/><span>{current}</span></div><div><span className="kfl-top-date">{formatDate(new Date().toISOString())}</span><span className="kfl-connected"><i/>Рабочее пространство</span></div></header>
+      <main className="kfl-page"><DataState query={query}>{query.error?<Button onClick={logout}>Вернуться ко входу</Button>:<Routes><Route index element={<Dashboard/>}/><Route path="athletes" element={<AthletesAdmin/>}/><Route path="events" element={<EventsAdmin/>}/><Route path="events/:eventId" element={<TournamentDetails/>}/><Route path="matches" element={<Navigate to="/admin/events" replace/>}/><Route path="seasons" element={<SeasonsAdmin/>}/><Route path="rankings" element={<RankingsAdmin/>}/><Route path="champions" element={<ChampionsAdmin/>}/><Route path="media" element={<MediaAdmin/>}/><Route path="applications" element={<ApplicationsAdmin/>}/><Route path="clubs" element={<DirectoryAdmin key="clubs" kind="clubs"/>}/><Route path="coaches" element={<DirectoryAdmin key="coaches" kind="coaches"/>}/><Route path="users" element={<DirectoryAdmin key="users" kind="users"/>}/><Route path="settings" element={<SettingsAdmin/>}/><Route path="*" element={<Navigate to="/admin" replace/>}/></Routes>}</DataState></main><footer className="kfl-workspace-footer"><span>KYRGYZ FREESTYLE LEAGUE</span><span>Победы начинаются с порядка.</span></footer>
+    </div></div>;
 }
 
-function LegacyDashboard() {
-  const q = useQuery({ queryKey: ['a-stats'], queryFn: () => get('/admin/stats') }); const data=q.data;
-  if (!data) return <QueryState query={q}>{null}</QueryState>;
-  const cards: [string, any][] = [['Спортсмены', data.athletes], ['Матчи', data.matches], ['Скоро', data.upcoming], ['Завершено', data.completed],
-    ['Заявки (new)', data.applications], ['Чемпионы', data.champions], ['Материалы', data.media]];
-  return (
-    <>
-      <div className="admin-toolbar"><Link className="btn" to="/admin/athletes?create=1">Добавить спортсмена</Link><Link className="btn ghost dark" to="/admin/events">Создать событие</Link><Link className="btn ghost dark" to="/admin/matches?create=1">Создать матч</Link><Link className="btn ghost dark" to="/admin/media">Создать материал</Link></div><div className="card" style={{marginBottom:24}}><span className="eyebrow">БЛИЖАЙШЕЕ СОБЫТИЕ</span><h3>{data.nextEvent?.name ?? 'Не запланировано'}</h3>{data.nextEvent && <p>{fmt(data.nextEvent.date)} · {data.nextEvent.isPublished ? 'Опубликовано' : 'Черновик'}</p>}</div><h2>Сезон: {data.season?.name ?? '—'}</h2>
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))' }}>
-        {cards.map(([l, v]) => <Card key={l}><div className="muted">{l}</div><b className="display" style={{ fontSize: 40 }}>{v}</b></Card>)}
-      </div>
-      <h3 style={{ margin: '24px 0 8px' }}>Последние действия</h3>
-      {data.activity.map((a: any) => <div key={a.id} className="muted">{fmt(a.createdAt)} · {a.user?.name ?? 'system'} · {a.action}</div>)}
-    </>
-  );
-}
-
-const Dashboard = KFLAdminDashboard;
-
-function AthletesAdmin() {
-  const [params]=useSearchParams();
-  const {modal}=AntApp.useApp();
-  const [open, setOpen] = useState(params.get('create')==='1');
-  const [filter, setFilter] = useState<any>({});
-  const [page, setPage] = useState(1);
-  const [historyId, setHistoryId] = useState<string>(params.get('athleteId') ?? undefined);
-  const [editing, setEditing] = useState<any>();
-  const query = useQuery({ queryKey: ['a-athletes', filter, page], queryFn: () => get('/admin/athletes', { ...filter, page, limit: 20 }) }); const data=query.data;
-  const wcs = useQuery({ queryKey: ['wcs'], queryFn: () => get('/weight-classes') });
-  const clubs = useQuery({ queryKey: ['clubs'], queryFn: () => get('/clubs') });
-  const save = useSave(['a-athletes', 'a-stats', 'athletes']);
-  const [form] = Form.useForm();
-  return (
-    <>
-      <Space wrap style={{ marginBottom: 12 }}><Button type="primary" onClick={() => { setEditing(undefined); form.resetFields(); setOpen(true); }}>Добавить спортсмена</Button>
-        <Input.Search aria-label="Поиск спортсмена" placeholder="Поиск спортсмена" allowClear onSearch={search => { setFilter({ ...filter, search }); setPage(1); }} />
-        <Select aria-label="Статус спортсменов" placeholder="Все статусы" allowClear style={{ width: 160 }} options={opt(['ACTIVE', 'PENDING', 'INACTIVE', 'SUSPENDED', 'RETIRED', 'ARCHIVED'])} onChange={status => { setFilter({ ...filter, status }); setPage(1); }} />
-        <Select aria-label="Категория спортсменов" placeholder="Все категории" allowClear style={{ width: 160 }} options={wcs.data?.map((w: any) => ({ value: w.id, label: w.name }))} onChange={weightClassId => { setFilter({ ...filter, weightClassId }); setPage(1); }} />
-      </Space>
-      <AthleteHistory id={historyId} onClose={() => setHistoryId(undefined)} />
-      {query.isError&&<QueryError error={query.error} retry={query.refetch}/>}<Table loading={query.isLoading} rowKey="id" size="small" dataSource={data?.items} pagination={{ current: page, pageSize: 20, total: data?.total, showSizeChanger: false, onChange: setPage }} scroll={{ x: 640 }} columns={[
-        { title: 'Имя', render: (_: any, a: any) => <Button type="link" onClick={() => setHistoryId(a.id)}>{fullName(a)}{a.isArchived ? ' (архив)' : ''}</Button> },
-        { title: 'Вес', render: (_: any, a: any) => a.weightClass.name }, { title: 'Город', dataIndex: 'city' },
-        { title: 'Клуб', render: (_: any, a: any) => a.club?.name }, { title: 'Статус', dataIndex: 'status', render: (s: string, a: any) => (
-          <Select aria-label={"Статус: "+fullName(a)} size="small" value={s} style={{ width: 120 }} options={opt(['PENDING', 'ACTIVE', 'INACTIVE', 'SUSPENDED', 'RETIRED'])} onChange={(v) => save.mutate({ method: 'patch', url: `/athletes/${a.id}`, data: { status: v } })} />) },
-
-        {title:'Действия',render:(_:any,a:any)=><Dropdown trigger={['click']} menu={{items:[{key:'edit',label:'Изменить'},{key:'history',label:'История'},{key:'archive',label:a.isArchived?'Восстановить':'Архивировать',danger:!a.isArchived}],onClick:({key})=>{if(key==='edit'){setEditing(a);form.resetFields();form.setFieldsValue(a);setOpen(true);}if(key==='history')setHistoryId(a.id);if(key==='archive')modal.confirm({title:a.isArchived?'Восстановить спортсмена?':'Архивировать спортсмена?',content:'История матчей будет сохранена.',onOk:()=>save.mutate({method:a.isArchived?'post':'delete',url:'/athletes/'+a.id+(a.isArchived?'/restore':'')})});}}}><Button aria-label={'Действия: '+fullName(a)}>•••</Button></Dropdown>},
-      ]} />
-      <Modal title={editing ? 'Изменить спортсмена' : 'Новый спортсмен'} open={open} onCancel={() => setOpen(false)} onOk={() => form.submit()} confirmLoading={save.isPending}>
-        <Form disabled={save.isPending} form={form} layout="vertical" onFinish={(v) => save.mutate({ method: editing ? 'patch' : 'post', url: editing ? `/athletes/${editing.id}` : '/athletes', data: v }, { onSuccess: () => { setOpen(false); form.resetFields(); } })}>
-          <Form.Item name="firstName" label="Имя" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="lastName" label="Фамилия" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="nickname" label="Никнейм"><Input /></Form.Item>
-          <Form.Item name="country" label="Страна"><Input /></Form.Item><Form.Item name="city" label="Город"><Input /></Form.Item><Form.Item name="bio" label="Биография"><Input.TextArea rows={4}/></Form.Item>
-          <Form.Item name="weightClassId" label="Вес" rules={[{ required: true }]}><Select options={wcs.data?.map((w: any) => ({ value: w.id, label: w.name }))} /></Form.Item>
-          <Form.Item name="clubId" label="Клуб"><Select allowClear options={clubs.data?.map((c: any) => ({ value: c.id, label: c.name }))} /></Form.Item>
-          <Form.Item name="photoUrl" label="Фото"><ImageField /></Form.Item>
-        </Form>
-      </Modal>
-    </>
-  );
-}
-
-function SeasonsAdmin() {
-  const seasons = useQuery({ queryKey: ['a-seasons'], queryFn: () => get('/admin/seasons') });
-  const events = useQuery({ queryKey: ['a-events'], queryFn: () => get('/admin/events') });
-  const wcs = useQuery({ queryKey: ['wcs'], queryFn: () => get('/weight-classes') });
-  const save = useSave(['seasons', 'a-events', 'wcs', 'a-stats']);
-  const [sf] = Form.useForm(); const [ef] = Form.useForm(); const [wf] = Form.useForm();
-  const ok = (f: any) => ({ onSuccess: () => f.resetFields() });
-  return (
-    <>{seasons.isError&&<QueryError error={seasons.error} retry={seasons.refetch}/ >}{wcs.isError&&<QueryError error={wcs.error} retry={wcs.refetch}/>}<div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', alignItems: 'start' }}>
-      <Card title="Сезоны">
-        {seasons.data?.map((s: any) => <div key={s.id} style={{ marginBottom: 6 }}>{s.name} <Tag>{s.status}</Tag>
-          {s.status !== 'ACTIVE' && <Button size="small" onClick={() => save.mutate({ method: 'patch', url: `/seasons/${s.id}`, data: { status: 'ACTIVE' } })}>Активировать</Button>}</div>)}
-        <Form name="season-create" form={sf} layout="vertical" onFinish={(v) => save.mutate({ method: 'post', url: '/seasons', data: { ...v, startDate: v.startDate.toISOString() } }, ok(sf))}>
-          <Form.Item name="name" label="Название" rules={[{ required: true }]}><Input placeholder="Season 2" /></Form.Item>
-          <Form.Item name="weightClassIds" label="Весовые категории"><Select mode="multiple" options={wcs.data?.map((w:any)=>({value:w.id,label:w.name}))}/></Form.Item><Form.Item name="startDate" label="Начало" rules={[{ required: true }]}><DatePicker style={{ width: '100%' }} /></Form.Item>
-          <Button htmlType="submit" loading={save.isPending}>Создать сезон</Button>
-        </Form>
-      </Card>
-      <Card title="Весовые категории">
-        {wcs.data?.map((w: any) => <div key={w.id}>{w.name}</div>)}
-        <Form name="weight-create" form={wf} layout="vertical" style={{ marginTop: 12 }} onFinish={(v) => save.mutate({ method: 'post', url: '/weight-classes', data: v }, ok(wf))}>
-          <Form.Item name="name" label="Название" rules={[{ required: true }]}><Input placeholder="97 кг" /></Form.Item>
-          <Form.Item name="maxKg" label="Макс. вес" rules={[{ required: true }]}><InputNumber min={30} style={{ width: '100%' }} /></Form.Item>
-          <Button htmlType="submit" loading={save.isPending}>Добавить</Button>
-        </Form>
-      </Card>
-    </div><SeasonRoster /></>
-  );
-}
-
-function Recalc() {
-  const seasons = useQuery({ queryKey: ['seasons'], queryFn: () => get('/seasons') });
-  const save = useSave(['a-stats']);
-  return (
-    <Card title="Пересчёт рейтинга">
-      <p className="muted">Рейтинг — производная от результатов матчей. Пересчитайте после смены формулы.</p>
-      {seasons.data?.map((s: any) => <Button key={s.id} style={{ marginRight: 8 }} onClick={() => save.mutate({ method: 'post', url: '/rankings/recalculate', data: { seasonId: s.id } })}>{s.name}</Button>)}
-    </Card>
-  );
-}
-
-
-
-const ITEMS=[['/admin','Обзор'],['/admin/seasons','Сезоны'],['/admin/athletes','Спортсмены'],['/admin/applications','Заявки'],['/admin/events','События'],['/admin/matches','Матчи'],['/admin/rankings','Рейтинги'],['/admin/champions','Чемпионы'],['/admin/media','Медиа'],['/admin/clubs','Клубы'],['/admin/coaches','Тренеры'],['/admin/users','Пользователи'],['/admin/settings','Настройки']];
 export default function Admin(){
- const {token,logout}=useAuth();const loc=useLocation();const nav=useNavigate();const [open,setOpen]=useState(false);
- const me=useQuery({queryKey:['admin-me',token],queryFn:()=>get('/auth/me'),enabled:!!token,staleTime:0});
- if(!token)return <Navigate to="/admin/login" replace/>;
- if(me.isLoading)return <QueryState query={me}>{null}</QueryState>;
- if(me.isError)return <QueryError error={me.error} retry={me.refetch}/>;
- if(me.data?.role!=='ADMIN')return <QueryError error={{response:{status:403}}}/>;
- const menu=<Menu theme="dark" mode="inline" selectedKeys={[loc.pathname]} items={[{key:'league',type:'group',label:'ЛИГА',children:ITEMS.slice(0,9).map(([key,label])=>({key,label}))},{key:'directory',type:'group',label:'УПРАВЛЕНИЕ',children:ITEMS.slice(9).map(([key,label])=>({key,label}))}]} onClick={({key})=>{nav(key);setOpen(false);}}/>;
- return <AntApp><div className="admin-shell"><aside className="admin-sidebar"><Link to="/" className="logo"><i/>KFL / ADMIN</Link>{menu}</aside><div className="admin-workspace"><header className="admin-header"><Button className="admin-mobile-menu" aria-label="Меню администрации" onClick={()=>setOpen(true)}>☰</Button><h1 className="admin-title">{ITEMS.find(([k])=>k===loc.pathname)?.[1] ?? 'Администрация'}</h1><Button onClick={()=>{logout();nav('/admin/login');}}>Выйти</Button></header><main className="admin-main"><Suspense fallback={<Loading/>}><Routes><Route index element={<Dashboard/>}/><Route path="matches" element={<MatchesAdmin/>}/><Route path="athletes" element={<AthletesAdmin/>}/><Route path="applications" element={<ApplicationsAdmin/>}/><Route path="seasons" element={<SeasonsAdmin/>}/><Route path="events" element={<EventsAdmin/>}/><Route path="rankings" element={<Recalc/>}/><Route path="media" element={<MediaAdmin/>}/><Route path="champions" element={<Directory kind="champions"/>}/><Route path="clubs" element={<Directory kind="clubs"/>}/><Route path="coaches" element={<Directory kind="coaches"/>}/><Route path="users" element={<Directory kind="users"/>}/><Route path="settings" element={<Settings/>}/><Route path="*" element={<QueryError error={{response:{status:404}}}/>}/></Routes></Suspense></main></div><Drawer title="KFL / ADMIN" open={open} onClose={()=>setOpen(false)} width="min(300px, 90vw)" styles={{body:{background:'var(--ink)',padding:0}}}>{menu}</Drawer></div></AntApp>;
+  const[token,setToken]=useState(()=>localStorage.getItem('nwl-token')||''),client=useQueryClient();
+  const logout=useCallback(()=>{localStorage.removeItem('nwl-token');setToken('');client.removeQueries({queryKey:['admin-v3']});},[client]);
+  useEffect(()=>{window.addEventListener('kfl-session-expired',logout);const storage=(e:StorageEvent)=>{if(e.key==='nwl-token'&&!e.newValue)logout();};window.addEventListener('storage',storage);return()=>{window.removeEventListener('kfl-session-expired',logout);window.removeEventListener('storage',storage);};},[logout]);
+  return <ConfigProvider locale={ruRU} theme={{algorithm:theme.darkAlgorithm,token:{colorPrimary:'#EE2737',colorBgBase:'#090A0D',colorBgContainer:'#1B1C22',colorText:'#FFFFFF',colorTextSecondary:'#A4A5AF',borderRadius:6,fontFamily:'"DM Sans", Arial, sans-serif',controlHeight:40},components:{Table:{headerBg:'#16171D',rowHoverBg:'#24252D'},Modal:{contentBg:'#16171D',headerBg:'#16171D'},Drawer:{colorBgElevated:'#111217'}}}}><AntApp className="kfl-root"><Session.Provider value={{token,logout}}>{token?<Workspace logout={logout}/>:<Login onLogin={value=>{client.removeQueries({queryKey:['admin-v3']});localStorage.setItem('nwl-token',value);setToken(value);}}/>}</Session.Provider></AntApp></ConfigProvider>;
 }

@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {"types": ["node"], "target": "ES2022"},
+  "include": ["src", "tests", "playwright.config.ts"]
+}

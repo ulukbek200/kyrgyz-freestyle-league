@@ -1,0 +1,380 @@
+
+/* KFL FIGHT CARD VIEW
+   Дополнение к существующему admin.css.
+   Глобальные стили админки не изменяются.
+*/
+
+.kfl-view-switch {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 24px;
+}
+
+.kfl-view-switch .ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  font-weight: 600;
+}
+
+.kfl-fcv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.kfl-fcv-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 22px;
+  background: var(--k-card, #1b1c22);
+  border: 1px solid var(--k-line, #292a33);
+  border-radius: 10px;
+  color: #fff;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.kfl-fcv-card:hover {
+  border-color: rgba(238, 39, 55, 0.55);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.2);
+}
+
+.kfl-fcv-topline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    #ee2737 0%,
+    #ee2737 45%,
+    #34353f 45%,
+    #34353f 55%,
+    #2563eb 55%,
+    #2563eb 100%
+  );
+}
+
+.kfl-fcv-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.kfl-fcv-event {
+  min-width: 0;
+}
+
+.kfl-fcv-eyebrow {
+  display: block;
+  color: var(--k-red, #ee2737);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.kfl-fcv-event h3 {
+  margin: 8px 0 5px;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.kfl-fcv-event time {
+  color: var(--k-muted, #a4a5af);
+  font-size: 11px;
+}
+
+.kfl-fcv-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.kfl-fcv-meta .ant-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kfl-fcv-versus {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 28px 0;
+}
+
+.kfl-fcv-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  gap: 9px;
+}
+
+.kfl-fcv-portrait {
+  position: relative;
+  width: 100px;
+  height: 115px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #292a33;
+}
+
+.kfl-fcv-portrait img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.kfl-fcv-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #999ba8;
+  font-size: 38px;
+  font-weight: 900;
+  background: linear-gradient(145deg, #30313b, #202127);
+}
+
+.kfl-fcv-red .kfl-fcv-portrait {
+  border-bottom: 3px solid #ee2737;
+}
+
+.kfl-fcv-blue .kfl-fcv-portrait {
+  border-bottom: 3px solid #2563eb;
+}
+
+.kfl-fcv-corner-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+
+.kfl-fcv-red .kfl-fcv-corner-label {
+  color: #ff6c79;
+}
+
+.kfl-fcv-blue .kfl-fcv-corner-label {
+  color: #7ca6ff;
+}
+
+.kfl-fcv-fighter > strong {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.kfl-fcv-winner-icon {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #d2a44b;
+  color: #171717;
+}
+
+.kfl-fcv-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.kfl-fcv-vs,
+.kfl-fcv-score {
+  color: var(--k-red, #ee2737);
+  font-family: Impact, 'Arial Narrow', sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+
+.kfl-fcv-score span {
+  padding: 0 4px;
+  color: #777987;
+}
+
+.kfl-fcv-center small {
+  color: #828492;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.kfl-fcv-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 13px 15px;
+  background: #24252d;
+  border: 1px solid #32333e;
+  border-radius: 6px;
+}
+
+.kfl-fcv-result > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.kfl-fcv-result > div > span {
+  color: #c7a976;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.kfl-fcv-result strong {
+  color: #fff;
+  font-size: 13px;
+}
+
+.kfl-fcv-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--k-line, #292a33);
+}
+
+.kfl-fcv-actions .ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  font-size: 11px;
+}
+
+.kfl-fcv-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 4px;
+  color: #a4a5af;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.kfl-fcv-actions a:hover {
+  color: #ff6875;
+}
+
+.kfl-fcv-empty {
+  padding: 40px 20px;
+  background: var(--k-card, #1b1c22);
+  border: 1px solid var(--k-line, #292a33);
+  border-radius: 10px;
+}
+
+.kfl-card-pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0 28px;
+}
+
+@media (max-width: 1250px) {
+  .kfl-fcv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .kfl-view-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kfl-fcv-card {
+    padding: 16px;
+  }
+
+  .kfl-fcv-event h3 {
+    font-size: 16px;
+  }
+
+  .kfl-fcv-versus {
+    grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr);
+    gap: 5px;
+    padding: 24px 0;
+  }
+
+  .kfl-fcv-portrait {
+    width: 68px;
+    height: 80px;
+  }
+
+  .kfl-fcv-placeholder {
+    font-size: 28px;
+  }
+
+  .kfl-fcv-fighter > strong {
+    font-size: 12px;
+  }
+
+  .kfl-fcv-corner-label {
+    font-size: 8px;
+  }
+
+  .kfl-fcv-vs,
+  .kfl-fcv-score {
+    font-size: 24px;
+  }
+
+  .kfl-fcv-center small {
+    font-size: 7px;
+  }
+
+  .kfl-fcv-actions .ant-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .kfl-card-pagination {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kfl-fcv-card {
+    transition: none;
+  }
+
+  .kfl-fcv-card:hover {
+    transform: none;
+  }
+}

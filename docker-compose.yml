@@ -1,11 +1,14 @@
 services:
-  db:
-    image: postgres:16
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: league
-      POSTGRES_PASSWORD: league
-      POSTGRES_DB: league
-    ports: ["5432:5432"]
-    volumes: ["pgdata:/var/lib/postgresql/data"]
+      POSTGRES_USER: nomad
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your local environment}
+      POSTGRES_DB: nomad_league
+    ports:
+      - "5432:5432"
+    volumes:
+      - league_data:/var/lib/postgresql/data
 volumes:
-  pgdata:
+  league_data:

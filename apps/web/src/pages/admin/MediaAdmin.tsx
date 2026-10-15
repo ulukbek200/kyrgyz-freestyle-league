@@ -1,40 +1,24 @@
-import { FormSelect as Select } from '../../components/FormSelect';
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Alert, App, Button, Dropdown, Form, Input, Modal, Switch, Table } from 'antd';
-import { get, errMsg } from '../../api/client';
-import { fullName } from '../../components/ui';
-import { Cover, useDebounce } from '../../components/feedback';
-import { useAdminSave } from './useAdminSave';
-const categories = ['NEWS', 'INTERVIEW', 'ATHLETE_STORY', 'HIGHLIGHT', 'TRAINING', 'BEHIND_THE_SCENES', 'FACE_OFF', 'CHAMPIONSHIP'];
-export default function MediaAdmin() {
-  const {modal}=App.useApp();
-  const [search,setSearch]=useState(''); const [category,setCategory]=useState<string>();
-  const [athleteSearch,setAthleteSearch]=useState(''); const debounced=useDebounce(athleteSearch);
-  const athletes=useQuery({queryKey:['media-athletes',debounced],queryFn:()=>get('/admin/athletes',{search:debounced,limit:50})});
-  const q = useQuery({ queryKey: ['a-media'], queryFn: () => get('/admin/media') });
-  const [editing, setEditing] = useState<any>(); const [preview,setPreview]=useState(false);
-  const [form] = Form.useForm();
-  const save = useAdminSave();
-  const cover=Form.useWatch('coverUrl',form);const title=Form.useWatch('title',form);const content=Form.useWatch('content',form);const excerpt=Form.useWatch('excerpt',form);
-  function open(p: any) { setPreview(false); form.resetFields(); form.setFieldsValue(p); setEditing(p); }
-  return <>
-    <div className="admin-toolbar"><Button type="primary" onClick={() => open({ category: 'NEWS', isPublished: false })}>Создать материал</Button><Input.Search aria-label="Поиск материала" placeholder="Поиск материала" allowClear onChange={e=>setSearch(e.target.value)}/><Select aria-label="Категория материала" placeholder="Все категории" allowClear style={{width:200}} onChange={setCategory} options={categories.map(value=>({value,label:value}))}/></div>
-    {q.isError && <Alert type="error" message={errMsg(q.error)} />}
-    <Table loading={q.isLoading} rowKey="id" scroll={{x:650}} dataSource={q.data?.filter((p:any)=>p.title.toLowerCase().includes(search.toLowerCase())&&(!category||p.category===category))} columns={[
-      { title: 'Заголовок', dataIndex: 'title' }, { title: 'Тип', dataIndex: 'category', render: v => v === 'BEHIND_THE_SCENES' ? 'BACKSTAGE' : v },
-      { title: 'Опубликован', render: (_: any, p: any) => <Switch aria-label={"Публикация: "+p.title} checked={p.isPublished} disabled={save.isPending} onChange={isPublished => save.mutate({ method: 'patch', url: `/media/${p.id}`, data: { isPublished } })} /> },
-      {title:'Действия',render:(_:any,p:any)=><Dropdown trigger={['click']} menu={{items:[{key:'edit',label:'Редактировать'},{key:'delete',label:'Удалить',danger:true}],onClick:({key})=>{if(key==='edit')open(p);else modal.confirm({title:'Удалить материал?',onOk:()=>save.mutate({method:'delete',url:'/media/'+p.id})});}}}><Button aria-label={'Действия: '+p.title}>•••</Button></Dropdown>},
-    ]} />
-    <Modal title="Материал" open={!!editing} onCancel={() => setEditing(undefined)} onOk={() => form.submit()} confirmLoading={save.isPending}>
-      <Button style={{marginBottom:16}} onClick={()=>setPreview(v=>!v)}>{preview?'Вернуться к редактированию':'Предпросмотр'}</Button>{preview&&<article className="card"><Cover src={cover} alt={title}/><h2>{title || 'Без заголовка'}</h2><p>{excerpt}</p><div className="prose">{content}</div></article>}<Form style={{display:preview?'none':undefined}} disabled={save.isPending} form={form} layout="vertical" onFinish={data => save.mutate({ method: editing.id ? 'patch' : 'post', url: editing.id ? `/media/${editing.id}` : '/media', data }, { onSuccess: () => setEditing(undefined) })}>
-        <Form.Item name="title" label="Заголовок" rules={[{ required: true }]}><Input /></Form.Item>
-        <Form.Item name="category" label="Тип" rules={[{ required: true }]}><Select options={categories.map(value => ({ value, label: value === 'BEHIND_THE_SCENES' ? 'BACKSTAGE' : value }))} /></Form.Item>
-        <Form.Item name="excerpt" label="Анонс"><Input.TextArea /></Form.Item>
-        <Form.Item name="content" label="Текст" rules={[{ required: true }]}><Input.TextArea rows={8} /></Form.Item>
-        <Form.Item name="coverUrl" label="Обложка (URL)"><Input /></Form.Item><Cover src={cover} alt={title ?? 'Предпросмотр'}/><Form.Item name="athleteId" label="Связанный спортсмен"><Select showSearch allowClear filterOption={false} onSearch={setAthleteSearch} onClear={()=>form.setFieldValue('athleteId',null)} options={athletes.data?.items.map((a:any)=>({value:a.id,label:fullName(a)}))}/></Form.Item><p className="muted">Материал можно связать со спортсменом.</p>
-        <Form.Item name="isPublished" label="Опубликован" valuePropName="checked"><Switch /></Form.Item>
-      </Form>
-    </Modal>
-  </>;
+import {mediaUrl} from '../../mediaUrl';
+import {useState} from 'react';
+import {Button,Form,Input,Modal,Popconfirm,Select,Switch,Tag} from 'antd';
+import {Eye,Image as ImageIcon,Pencil} from 'lucide-react';
+import {formatDate,useAdminQuery,useLookups,fullName,type Row} from './api';
+import {AddButton,DataState,FormDialog,ImageField,PageTitle,TextField,required} from './components';
+import {useEditor} from './Management';
+import {useAdminSave} from './useAdminSave';
+
+export default function MediaAdmin(){
+  const query=useAdminQuery('media','/admin/media'),lookups=useLookups(),editor=useEditor({published:false}),{save,pending}=useAdminSave(),[preview,setPreview]=useState<Row|null>(null),[filter,setFilter]=useState('all');
+  const rows=query.data?.filter(m=>filter==='all'||(filter==='published'?!!m.publishedAt:!m.publishedAt));
+  return <><PageTitle title="Медиа" eyebrow="ИСТОРИИ ЛИГИ" description="Публикации, фотографии и люди за пределами ковра." action={<AddButton onClick={()=>editor.show()}>Создать публикацию</AddButton>}/>
+    <div className="kfl-filters"><Select aria-label="Состояние публикации" value={filter} onChange={setFilter} options={[{value:'all',label:'Все публикации'},{value:'published',label:'Опубликованные'},{value:'draft',label:'Черновики'}]}/></div>
+    <DataState query={query} empty={!rows?.length}><div className="kfl-media-grid">{rows?.map(m=><article className="kfl-media-card" key={m.id}><div className="kfl-media-photo">{m.imageUrl?<img src={mediaUrl(m.imageUrl)} alt={m.title}/>:<ImageIcon size={42}/>}<Tag color={m.publishedAt?'green':'default'}>{m.publishedAt?'Опубликовано':'Черновик'}</Tag></div><div className="kfl-media-copy"><span className="kfl-eyebrow">{m.category}</span><h2>{m.title}</h2><p>{m.excerpt}</p><small>{m.publishedAt?formatDate(m.publishedAt):'Не опубликовано'}</small><footer><Button icon={<Pencil size={14}/>} onClick={()=>editor.show({...m,published:!!m.publishedAt})}>Редактировать</Button><Button aria-label={`Предпросмотр ${m.title}`} icon={<Eye size={15}/>} onClick={()=>setPreview(m)}/><Popconfirm title="Удалить публикацию?" description="Это действие нельзя отменить." okText="Удалить" okButtonProps={{danger:true,loading:pending}} onConfirm={()=>save(`/admin/media/${m.id}`,undefined,'DELETE','Публикация удалена')}><Button danger type="text">Удалить</Button></Popconfirm></footer></div></article>)}</div></DataState>
+    <FormDialog {...editor} onClose={editor.close} pending={pending} title={editor.editing?'Редактировать публикацию':'Новая публикация'} onFinish={async values=>{
+      const{published,...v}=values;if(await save(`/admin/media${editor.editing?'/'+editor.editing.id:''}`,{...v,athleteId:v.athleteId||null,publishedAt:published?(editor.editing?.publishedAt||new Date().toISOString()):null},editor.editing?'PATCH':'POST'))editor.close();
+    }}><TextField name="title" label="Заголовок" wide/><Form.Item name="slug" label="Короткий адрес" rules={[...required,{pattern:/^[a-z0-9-]+$/,message:'Латинские буквы, цифры и дефис'}]}><Input placeholder="history-of-a-champion"/></Form.Item><TextField name="category" label="Рубрика"/>
+      <Form.Item name="imageUrl" label="Обложка" className="wide"><ImageField/></Form.Item><Form.Item name="excerpt" label="Текст публикации" className="wide" rules={required}><Input.TextArea rows={5} maxLength={10000} showCount/></Form.Item>
+      <Form.Item name="athleteId" label="Спортсмен"><Select allowClear showSearch optionFilterProp="label" options={lookups.data?.athletes.map(a=>({value:a.id,label:fullName(a)}))}/></Form.Item><Form.Item name="published" label="Опубликовать на сайте" valuePropName="checked"><Switch/></Form.Item>
+      <Button className="wide" icon={<Eye size={14}/>} onClick={()=>setPreview({id:'preview',...editor.form.getFieldsValue()})}>Предпросмотр</Button>
+    </FormDialog><Modal className="kfl-dialog" title="Предпросмотр публикации" open={!!preview} onCancel={()=>setPreview(null)} footer={<Button onClick={()=>setPreview(null)}>Закрыть</Button>} width={700}>{preview&&<article className="kfl-preview">{preview.imageUrl&&<img src={mediaUrl(preview.imageUrl)} alt="Обложка"/>}<Tag>{preview.category||'Рубрика'}</Tag><h2>{preview.title||'Заголовок публикации'}</h2><p>{preview.excerpt||'Текст публикации'}</p></article>}</Modal>
+    </>;
 }

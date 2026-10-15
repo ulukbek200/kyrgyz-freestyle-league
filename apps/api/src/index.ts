@@ -1,0 +1,72 @@
+import {currentEventRounds} from './eventSummary.js';
+import {databaseReady} from './readiness.js';
+import {webOrigins} from './runtimeConfig.js';
+import {athleteSearch,pagination} from './publicQueries.js';
+import {publicTournamentSystem} from './tournamentSystem.js';
+import {configureProxy,loginLimiters} from './loginSecurity.js';
+import {affiliationName,resolveAffiliations} from './affiliations.js';
+import {DIVISIONS, divisionSchema, profileEligibility, publicData, validWeight} from './ageDivisions.js';
+import {adminManagement, uploadDirectory} from './adminManagement.js';
+import './env.js';
+import express from 'express'; import cors from 'cors'; import helmet from 'helmet'; import rateLimit from 'express-rate-limit'; import bcrypt from 'bcryptjs'; import {z} from 'zod';import type {Prisma} from '@prisma/client';
+import {prisma} from './db.js'; import {allow,authenticate,signToken} from './auth.js'; import {asyncHandler, errorHandler, HttpError} from './http.js'; import {changeResult, resultSchema} from './results.js';
+export const app=express(); configureProxy(app); app.use(helmet()); app.use(cors({origin:webOrigins()})); app.use(express.json({limit:'1mb'})); app.use('/api/applications',rateLimit({windowMs:3600000,limit:8}));
+app.get('/api/health',(_q,r)=>r.json({status:'ok'}));
+app.get('/api/ready',databaseReady);
+const dummyPasswordHash=bcrypt.hashSync('invalid-account-placeholder',12);
+app.post('/api/auth/login',...loginLimiters(),asyncHandler(async(q,r)=>{const p=z.object({email:z.string().trim().email().max(254),password:z.string().min(8).max(200)}).safeParse(q.body);if(!p.success)return r.status(400).json({error:'Invalid request'});const u=await prisma.user.findUnique({where:{email:p.data.email.toLowerCase()}});const passwordMatches=await bcrypt.compare(p.data.password,u?.passwordHash??dummyPasswordHash);if(!u||u.isBlocked||!passwordMatches)return r.status(401).json({error:'Invalid request'});r.json({token:signToken(u),user:{id:u.id,email:u.email,role:u.role}})}));
+app.use('/api', (q,r,next)=>{if(q.method==='GET'&&!q.path.startsWith('/admin/')){const json=r.json.bind(r);r.json=(body)=>json(publicData(body));}next();});
+app.get('/api/age-reference',(_q,r)=>r.json({year:new Date().getUTCFullYear()}));
+app.use('/api',publicTournamentSystem);
+app.get('/api/age-divisions',(_q,r)=>r.json(DIVISIONS));
+app.get('/api/seasons',asyncHandler(async(_q,r)=>r.json(await prisma.season.findMany({orderBy:{startsAt:'desc'}}))));
+app.get('/api/weight-classes',asyncHandler(async(q,r)=>r.json(await prisma.weightClass.findMany({where:{ageDivision:q.query.ageDivision?divisionSchema.parse(q.query.ageDivision):{not:null}},orderBy:[{ageDivision:'asc'},{kilograms:'asc'}]}))));
+app.get('/api/athletes',asyncHandler(async(q,r)=>{const {page,limit}=pagination.parse(q.query),where:Prisma.AthleteWhereInput={status:'ACTIVE',...athleteSearch(q.query.search),...(q.query.city?{city:String(q.query.city)}:{}),...(q.query.clubId?{clubId:String(q.query.clubId)}:{}),...(q.query.weightClassId?{weightClassId:String(q.query.weightClassId)}:{}),...(q.query.ageDivision?{weightClass:{ageDivision:divisionSchema.parse(q.query.ageDivision)}}:{})};const[data,total]=await Promise.all([prisma.athlete.findMany({where,skip:(page-1)*limit,take:limit,include:{club:true,coach:true,weightClass:true,rankings:{where:{seasonId:null},orderBy:{rank:'asc'}}},orderBy:[{lastName:'asc'},{id:'asc'}]}),prisma.athlete.count({where})]);r.json({data,total,page,limit})}));
+app.get('/api/athletes/:id',asyncHandler(async(q,r)=>{const a=await prisma.athlete.findUnique({where:{id:String(q.params.id)},include:{club:true,coach:true,weightClass:true,tournamentParticipants:{include:{event:true,weightClass:true},orderBy:{event:{startsAt:'desc'}}},_count:{select:{tournamentParticipants:true,matchesAsA:{where:{status:'COMPLETED'}},matchesAsB:{where:{status:'COMPLETED'}},wonMatches:{where:{status:'COMPLETED'}}}},matchesAsA:{where:{status:'COMPLETED'},include:{athleteB:true,event:true,score:true},orderBy:{scheduledAt:'desc'},take:20},matchesAsB:{where:{status:'COMPLETED'},include:{athleteA:true,event:true,score:true},orderBy:{scheduledAt:'desc'},take:20},rankings:{include:{season:true,weightClass:true}},championships:{include:{weightClass:true,season:true}}}});if(!a)return r.status(404).json({error:'Invalid request'});r.json(a)}));
+app.get('/api/rankings',asyncHandler(async(q,r)=>{const seasonId=q.query.seasonId?String(q.query.seasonId):null,weightClassId=String(q.query.weightClassId||'');r.json(await prisma.ranking.findMany({where:{seasonId,...(weightClassId?{weightClassId}:{}),...(q.query.ageDivision?{weightClass:{ageDivision:divisionSchema.parse(q.query.ageDivision)}}:{}),athlete:{status:'ACTIVE'}},include:{athlete:{include:{club:true}},weightClass:true},orderBy:[{weightClass:{order:'asc'}},{rank:'asc'}]}))}));
+app.get('/api/matches',asyncHandler(async(q,r)=>{const {page,limit}=pagination.parse(q.query);const status=z.enum(['UPCOMING','LIVE','COMPLETED','CANCELLED']).optional().parse(q.query.status);const upcoming=q.query.upcoming==='true';const where:Prisma.MatchWhereInput={...(status?{status}:{}),...(q.query.eventId?{eventId:String(q.query.eventId)}:{}),...(q.query.weightClassId?{weightClassId:z.string().min(1).parse(q.query.weightClassId)}:{}),...(q.query.round||q.query.group?{tournamentBout:{is:{...(q.query.round?(()=>{const round=z.coerce.number().int().min(1).max(9).parse(q.query.round);return {phase:round<=5?'GROUP' as const:'PLAYOFF' as const,round:round<=5?round:round-5};})():{}),...(q.query.group?{groupName:z.enum(['A','B','C','D']).parse(q.query.group)}:{})}}}:{}),...(q.query.seasonId?{seasonId:String(q.query.seasonId)}:{}),...(upcoming?{status:'UPCOMING',scheduledAt:{gte:new Date()},event:{status:{in:['PLANNED','LIVE']}}}:{})};const[data,total]=await Promise.all([prisma.match.findMany({where,skip:(page-1)*limit,take:limit,include:{athleteA:true,athleteB:true,winner:true,weightClass:true,event:true,score:true},orderBy:[{scheduledAt:upcoming?'asc':'desc'},{id:'asc'}]}),prisma.match.count({where})]);r.json({data,total,page,limit})}));
+app.get('/api/matches/:id',asyncHandler(async(q,r)=>{const m=await prisma.match.findUnique({where:{id:String(q.params.id)},include:{athleteA:true,athleteB:true,winner:true,weightClass:true,event:true,season:true,score:true}});if(!m)return r.status(404).json({error:'Invalid request'});r.json(m)}));
+app.get('/api/events/upcoming',asyncHandler(async(_q,r)=>r.json(await prisma.event.findFirst({where:{status:'PLANNED',startsAt:{gte:new Date()}},orderBy:[{startsAt:'asc'},{id:'asc'}]}))));
+app.get('/api/summary',asyncHandler(async(_q,r)=>{const[athletes,weightClasses]=await Promise.all([prisma.athlete.count({where:{status:'ACTIVE'}}),prisma.weightClass.count({where:{ageDivision:{not:null}}})]);r.json({athletes,weightClasses})}));
+app.get('/api/clubs',asyncHandler(async(_q,r)=>r.json(await prisma.club.findMany({select:{id:true,name:true},orderBy:{name:'asc'}}))));
+app.get('/api/events/:id',asyncHandler(async(q,r)=>{const event=await prisma.event.findUnique({where:{id:String(q.params.id)},include:{weightClasses:{include:{weightClass:true}},participants:{include:{athlete:{include:{club:true}},weightClass:true}}}});if(!event)throw new HttpError(404,'Турнир не найден');r.json(event)}));
+app.get('/api/media/:id',asyncHandler(async(q,r)=>{const post=await prisma.mediaPost.findFirst({where:{id:String(q.params.id),publishedAt:{lte:new Date()}}});if(!post)throw new HttpError(404,'Материал не найден');r.json(post)}));
+app.get('/api/events',asyncHandler(async(_q,r)=>{
+ const events=await prisma.event.findMany({include:{weightClasses:{include:{weightClass:true}},_count:{select:{matches:true,participants:true}}},orderBy:{startsAt:'desc'}});
+ const rounds=await currentEventRounds(events.filter(e=>e.status==='PLANNED'||e.status==='LIVE').map(e=>e.id));
+ r.json(events.map(e=>({...e,currentRound:rounds.get(e.id)??null})));
+}));
+app.get('/api/media',asyncHandler(async(_q,r)=>r.json(await prisma.mediaPost.findMany({where:{publishedAt:{lte:new Date()}},orderBy:{publishedAt:'desc'},take:12}))));
+app.get('/api/champions',asyncHandler(async(_q,r)=>r.json(await prisma.championship.findMany({where:{isCurrent:true},include:{athlete:true,weightClass:true,season:true},orderBy:{weightClass:{order:'asc'}}}))));
+app.post('/api/applications',asyncHandler(async(q,r)=>{const p=z.object({weightClassId:z.string().min(1),ageDivision:divisionSchema.optional(),firstName:z.string().min(1),lastName:z.string().min(1),birthDate:z.coerce.date(),city:z.string().min(1),country:z.string().min(1),phone:z.string().min(6),email:z.string().email(),weightKg:z.number().positive(),clubName:affiliationName,coachName:affiliationName,experience:z.string().optional(),achievements:z.string().optional(),videoUrl:z.preprocess(v=>v===''?undefined:v,z.string().url().optional()),photoUrl:z.preprocess(v=>v===''?undefined:v,z.string().url().optional()),medicalInfo:z.string().optional()}).safeParse(q.body);if(!p.success)return r.status(400).json({error:'Invalid request'});const a=await prisma.$transaction(async tx=>{const checked=await profileEligibility(tx,{...p.data,dateOfBirth:p.data.birthDate});const application=await tx.application.create({data:{...p.data,ageDivision:checked.ageDivision}});await tx.notification.create({data:{type:'APPLICATION',message:`New application: ${application.firstName} ${application.lastName}`}});return application});r.status(201).json({id:a.id,status:a.status})}));
+app.use('/uploads',express.static(uploadDirectory,{dotfiles:'deny',setHeaders:r=>{r.setHeader('Cross-Origin-Resource-Policy','cross-origin');r.setHeader('X-Content-Type-Options','nosniff')}}));
+app.use('/api/admin',adminManagement);
+const admin=[authenticate,allow('ADMIN')];
+app.post('/api/admin/weight-classes',...admin,asyncHandler(async(q,r)=>{const p=z.object({ageDivision:divisionSchema,name:z.string().min(2),kilograms:z.number().int().positive(),order:z.number().int().default(0)}).safeParse(q.body);if(!p.success)return r.status(400).json({error:'Invalid weight class'});if(!validWeight(p.data.ageDivision,p.data.kilograms))throw new HttpError(400,'Вес не входит в утверждённый набор KFL');r.status(201).json(await prisma.weightClass.create({data:{...p.data,name:p.data.ageDivision+' · '+p.data.kilograms+' кг'}}))}));
+app.get('/api/admin/ranking-rule',...admin,asyncHandler(async(_q,r)=>r.json(await prisma.rankingRule.findUnique({where:{name:'default'}}))));
+app.patch('/api/admin/ranking-rule',...admin,asyncHandler(async(q,r)=>{const p=z.object({winPoints:z.number().int().nonnegative(),earlyWinBonus:z.number().int().nonnegative(),lossPoints:z.number().int().nonnegative(),penaltyPoints:z.number().int().nonnegative(),tieBreakRule:z.enum(['WINS_THEN_FEWER_LOSSES','FEWER_LOSSES_THEN_WINS','HEAD_TO_HEAD'])}).safeParse(q.body);if(!p.success)return r.status(400).json({error:'Invalid ranking rule'});r.json(await prisma.rankingRule.upsert({where:{name:'default'},create:{name:'default',...p.data},update:p.data}))}));
+app.get('/api/admin/applications',...admin,asyncHandler(async(_q,r)=>r.json(await prisma.application.findMany({include:{season:true,weightClass:true},orderBy:{createdAt:'desc'}}))));
+app.patch('/api/admin/applications/:id',...admin,asyncHandler(async(q,r)=>{const p=z.object({status:z.enum(['PENDING','REVIEW','APPROVED','REJECTED']),adminNotes:z.string().optional()}).safeParse(q.body);if(!p.success)return r.status(400).json({error:'Invalid request'});const a=await prisma.$transaction(async(tx:Prisma.TransactionClient)=>{await tx.$queryRaw`SELECT "id" FROM "Application" WHERE "id" = ${String(q.params.id)} FOR UPDATE`;const existing=await tx.application.findUnique({where:{id:String(q.params.id)}});if(!existing)throw new HttpError(404,'Application not found');let athleteId=existing.athleteId;
+ if(p.data.status==='APPROVED'){
+   if(!existing.weightClassId)throw new HttpError(409,'Старая заявка требует уточнения категории. Подайте новую анкету с корректными данными.');
+   const checked=await profileEligibility(tx,{dateOfBirth:existing.birthDate,weightClassId:existing.weightClassId,ageDivision:existing.ageDivision??undefined,weightKg:existing.weightKg});
+   // Serializes approval of duplicate applications for the same identity.
+   await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${existing.firstName.trim().toLowerCase()+'|'+existing.lastName.trim().toLowerCase()+'|'+existing.birthDate.toISOString()}))`;
+   if(!athleteId){
+     const matches=await tx.athlete.findMany({where:{firstName:{equals:existing.firstName,mode:'insensitive'},lastName:{equals:existing.lastName,mode:'insensitive'},dateOfBirth:existing.birthDate}});
+     if(matches.length>1)throw new HttpError(409,'Найдено несколько профилей. Требуется ручная сверка спортсмена.');
+     athleteId=matches[0]?.id??null;
+   }
+   if(!athleteId){
+     const {clubId,coachId}=await resolveAffiliations(tx,existing);
+     athleteId=(await tx.athlete.create({data:{firstName:existing.firstName,lastName:existing.lastName,dateOfBirth:existing.birthDate,city:existing.city,country:existing.country,nationality:existing.country==='Kyrgyzstan'?'KG':'XX',weightClassId:checked.weight.id,clubId,coachId,imageUrl:existing.photoUrl,status:'ACTIVE'}})).id;
+   }
+   await tx.$queryRaw`SELECT "id" FROM "Athlete" WHERE "id"=${athleteId} FOR UPDATE`;
+   const athlete=await tx.athlete.findUniqueOrThrow({where:{id:athleteId}});
+   if(athlete.status!=='ACTIVE'||!athlete.dateOfBirth||athlete.dateOfBirth.getTime()!==existing.birthDate.getTime())throw new HttpError(409,'Профиль спортсмена требует ручной проверки');
+
+ }
+ const updated=await tx.application.update({where:{id:existing.id},data:{...p.data,athleteId}});await tx.auditLog.create({data:{userId:q.user!.id,action:'UPDATE_APPLICATION',entity:'Application',entityId:updated.id,metadata:p.data}});return updated});r.json(a)}));
+app.post('/api/admin/matches/:id/result',...admin,asyncHandler(async(q,r)=>{const p=resultSchema.safeParse(q.body);if(!p.success)return r.status(400).json({error:'Invalid request'});r.json(await prisma.$transaction(tx=>changeResult(tx,String(q.params.id),p.data,q.user!.id),{timeout:30000}))}));
+app.delete('/api/admin/matches/:id/result',...admin,asyncHandler(async(q,r)=>{const reason=z.object({reason:z.string().trim().max(2000).optional()}).parse(q.body??{}).reason;r.json(await prisma.$transaction(tx=>changeResult(tx,String(q.params.id),null,q.user!.id,reason),{timeout:30000}))}));
+app.use(errorHandler);

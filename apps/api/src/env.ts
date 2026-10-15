@@ -1,10 +1,14 @@
-import 'dotenv/config';
+import {config} from 'dotenv';
+import {existsSync} from 'node:fs';
+import {dirname, join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-export const env = {
-  PORT: Number(process.env.PORT ?? 4000),
-  JWT_SECRET: process.env.JWT_SECRET ?? 'dev-secret',
-  WEB_URL: process.env.WEB_URL ?? 'http://localhost:5173',
-};
-if (process.env.NODE_ENV === 'production' && env.JWT_SECRET === 'dev-secret') {
-  throw new Error('JWT_SECRET must be set in production');
+// Locate the workspace root from source OR dist/src, independently of process.cwd().
+let directory = dirname(fileURLToPath(import.meta.url));
+while (!existsSync(join(directory, 'package-lock.json'))) {
+  const parent = dirname(directory);
+  if (parent === directory) throw new Error('Cannot locate workspace root for .env');
+  directory = parent;
 }
+export const workspaceRoot = directory;
+config({path: join(workspaceRoot, '.env')}); // Deployment environment always wins.

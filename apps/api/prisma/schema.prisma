@@ -1,18 +1,32 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL" )
 }
 
+enum EventStatus {
+  PLANNED
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+enum AgeDivision {
+  U17
+  U23
+}
+enum RegistrationStatus {
+  ACTIVE
+  INACTIVE
+  NEEDS_REVIEW
+}
 enum Role {
+  REGISTRAR
   ADMIN
   MODERATOR
   ATHLETE
 }
-
 enum AthleteStatus {
   PENDING
   ACTIVE
@@ -20,608 +34,382 @@ enum AthleteStatus {
   SUSPENDED
   RETIRED
 }
-
 enum MatchStatus {
   UPCOMING
   LIVE
   COMPLETED
   CANCELLED
 }
-
-enum MatchType {
-  REGULAR
-  CHAMPIONSHIP
-  TITLE_DEFENSE
-}
-
 enum MatchMethod {
-  POINTS
-  TECHNICAL_SUPERIORITY
+  DECISION
+  TECHNICAL_FALL
   PIN
   FORFEIT
-  DISQUALIFICATION
-  INJURY
 }
-
 enum ApplicationStatus {
   PENDING
   REVIEW
   APPROVED
   REJECTED
-  MORE_INFO
-}
-
-enum MediaCategory {
-  NEWS
-  INTERVIEW
-  ATHLETE_STORY
-  HIGHLIGHT
-  BEHIND_THE_SCENES
-  TRAINING
-  FACE_OFF
-  CHAMPIONSHIP
-}
-
-enum SeasonStatus {
-  DRAFT
-  ACTIVE
-  FINISHED
 }
 
 model User {
-  competitionApprovals CompetitionApproval[]
-
-  id           String      @id @default(cuid())
-  email        String      @unique
+  id String @id @default(cuid())
+  email String @unique
   passwordHash String
-  role         Role        @default(MODERATOR)
-  name         String
-  isActive     Boolean     @default(true)
-  athlete      Athlete?
-  mediaPosts   MediaPost[]
-  auditLogs    AuditLog[]
-  createdAt    DateTime    @default(now())
+  isBlocked Boolean @default(false)
+  sessionVersion Int @default(0)
+  role Role @default(ATHLETE)
+  athlete Athlete?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  auditLogs AuditLog[]
 }
-
-model Club {
-  id       String    @id @default(cuid())
-  name     String
-  city     String?
-  country  String    @default("KG")
-  logoUrl  String?
-  athletes Athlete[]
-  coaches  Coach[]
-}
-
-model Coach {
-  id       String    @id @default(cuid())
-  fullName String
-  clubId   String?
-  club     Club?     @relation(fields: [clubId], references: [id])
-  athletes Athlete[]
-}
-
-model WeightClass {
-  competitionDivisions CompetitionDivision[]
-  competitionParticipants CompetitionParticipant[]
-
-  seasons       SeasonWeightClass[]
-  id            String              @id @default(cuid())
-  name          String
-  maxKg         Float
-  sortOrder     Int                 @default(0)
-  athletes      Athlete[]
-  matches       Match[]
-  rankings      Ranking[]
-  snapshots     RankingSnapshot[]
-  championships Championship[]
-}
-
 model Athlete {
-  competitionParticipants CompetitionParticipant[]
-
-  applications  Application[]
-  id            String            @id @default(cuid())
-  userId        String?           @unique
-  user          User?             @relation(fields: [userId], references: [id])
-  firstName     String
-  lastName      String
-  nickname      String?
-  slug          String            @unique
-  birthDate     DateTime?
-  country       String            @default("KG")
-  nationality   String?
-  city          String?
-  photoUrl      String?
-  bio           String?
-  achievements  String[]
-  status        AthleteStatus     @default(PENDING)
-  isArchived    Boolean           @default(false)
-  clubId        String?
-  club          Club?             @relation(fields: [clubId], references: [id])
-  coachId       String?
-  coach         Coach?            @relation(fields: [coachId], references: [id])
-  weightClassId String
-  weightClass   WeightClass       @relation(fields: [weightClassId], references: [id])
-  seasons       SeasonAthlete[]
-  matchesAsA    Match[]           @relation("AthleteA")
-  matchesAsB    Match[]           @relation("AthleteB")
-  matchesWon    Match[]           @relation("Winner")
-  rankings      Ranking[]
-  snapshots     RankingSnapshot[]
+  tournamentParticipants TournamentParticipant[]
+  dateOfBirth DateTime? @db.Date
+  registrations AthleteSeasonRegistration[]
+  id String @id @default(cuid())
+  firstName String
+  lastName String
+  nickname String?
+  country String @default("Kyrgyzstan")
+  nationality String @default("KG")
+  city String
+  imageUrl String?
+  story String? @db.Text
+  status AthleteStatus @default(ACTIVE)
+  clubId String?
+  coachId String?
+  weightClassId String?
+  userId String? @unique
+  club Club? @relation(fields:[clubId], references:[id], onDelete:SetNull)
+  coach Coach? @relation(fields:[coachId], references:[id], onDelete:SetNull)
+  weightClass WeightClass? @relation(fields:[weightClassId], references:[id], onDelete:SetNull)
+  user User? @relation(fields:[userId], references:[id], onDelete:SetNull)
+  matchesAsA Match[] @relation("AthleteA")
+  matchesAsB Match[] @relation("AthleteB")
+  wonMatches Match[] @relation("Winner")
+  rankings Ranking[]
+  snapshots RankingSnapshot[]
   championships Championship[]
-  mediaPosts    MediaPost[]
-  videos        Video[]
-  photos        Photo[]
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-
-  @@index([weightClassId])
-  @@index([city])
+  applications Application[]
+  mediaPosts MediaPost[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([lastName, firstName])
+  @@index([city, status])
 }
-
+model Club {
+  id String @id @default(cuid())
+  name String @unique
+  city String
+  country String @default("Kyrgyzstan")
+  athletes Athlete[]
+  coaches Coach[]
+}
+model Coach {
+  id String @id @default(cuid())
+  name String
+  clubId String?
+  club Club? @relation(fields:[clubId], references:[id], onDelete:SetNull)
+  athletes Athlete[]
+}
+model WeightClass {
+  tournamentParticipants TournamentParticipant[]
+  eventWeights EventWeightClass[]
+  ageDivision AgeDivision?
+  registrations AthleteSeasonRegistration[]
+  applications Application[]
+  @@unique([ageDivision, kilograms])
+  @@unique([id, ageDivision])
+  id String @id @default(cuid())
+  name String @unique
+  kilograms Int
+  order Int @default(0)
+  athletes Athlete[]
+  matches Match[]
+  rankings Ranking[]
+  snapshots RankingSnapshot[]
+  championships Championship[]
+}
+// Single active season is enforced by the partial unique index in migration 202610120002.
 model Season {
-  competition Competition?
-
-  weightClasses SeasonWeightClass[]
-  id            String              @id @default(cuid())
-  name          String
-  slug          String              @unique
-  description   String?
-  startDate     DateTime
-  endDate       DateTime?
-  status        SeasonStatus        @default(DRAFT)
-  rankingRules  Json?
-  athletes      SeasonAthlete[]
-  events        Event[]
-  matches       Match[]
-  rankings      Ranking[]
-  snapshots     RankingSnapshot[]
+  cycle SeasonCycle?
+  seasonYear Int?
+  registrations AthleteSeasonRegistration[]
+  applications Application[]
+  id String @id @default(cuid())
+  name String @unique
+  description String? @db.Text
+  startsAt DateTime
+  endsAt DateTime?
+  isActive Boolean @default(false)
+  events Event[]
+  matches Match[]
+  rankings Ranking[]
+  snapshots RankingSnapshot[]
   championships Championship[]
+  createdAt DateTime @default(now())
 }
-
-model SeasonWeightClass {
-  seasonId      String
-  weightClassId String
-  season        Season      @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  weightClass   WeightClass @relation(fields: [weightClassId], references: [id])
-
-  @@id([seasonId, weightClassId])
-}
-
-model SeasonAthlete {
-  seasonId  String
-  athleteId String
-  season    Season  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  athlete   Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-
-  @@id([seasonId, athleteId])
-}
-
 model Event {
-  competitionFixtures CompetitionFixture[]
-  id          String            @id @default(cuid())
-  seasonId    String
-  season      Season            @relation(fields: [seasonId], references: [id])
-  name        String
-  slug        String            @unique
-  date        DateTime
-  venue       String?
-  city        String?
-  description String?
-  coverUrl    String?
-  ticketUrl   String?
-  streamUrl   String?
-  isPublished Boolean           @default(true)
-  matches     Match[]
-  snapshots   RankingSnapshot[]
-  sponsors    Sponsor[]         @relation("EventSponsors")
-
-  @@unique([id, seasonId])
-  @@index([seasonId, date])
+  formats TournamentFormat[]
+  bannerUrl String?
+  city String @default("")
+  description String? @db.Text
+  status EventStatus @default(PLANNED)
+  participants TournamentParticipant[]
+  weightClasses EventWeightClass[]
+  ageDivision AgeDivision?
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  venue String
+  startsAt DateTime
+  seasonId String?
+  season Season? @relation(fields:[seasonId], references:[id], onDelete:Restrict)
+  matches Match[]
+  createdAt DateTime @default(now())
+  @@index([startsAt])
 }
-
 model Match {
-  countsForLeagueRanking Boolean @default(true)
-  competitionFixture CompetitionFixture?
-
-  id            String        @id @default(cuid())
-  seasonId      String
-  season        Season        @relation(fields: [seasonId], references: [id])
-  eventId       String
-  event         Event         @relation(fields: [eventId, seasonId], references: [id, seasonId])
+  tournamentBout TournamentBout?
+  ageDivision AgeDivision?
+  id String @id @default(cuid())
+  seasonId String?
+  eventId String
   weightClassId String
-  weightClass   WeightClass   @relation(fields: [weightClassId], references: [id])
-  athleteAId    String
-  athleteA      Athlete       @relation("AthleteA", fields: [athleteAId], references: [id])
-  athleteBId    String
-  athleteB      Athlete       @relation("AthleteB", fields: [athleteBId], references: [id])
-  scheduledAt   DateTime
-  status        MatchStatus   @default(UPCOMING)
-  type          MatchType     @default(REGULAR)
-  referees      String[]
-  winnerId      String?
-  winner        Athlete?      @relation("Winner", fields: [winnerId], references: [id])
-  method        MatchMethod?
-  scoreA        Int?
-  scoreB        Int?
-  penaltiesA    Int           @default(0)
-  penaltiesB    Int           @default(0)
-  notes         String?
-  videoUrl      String?
-  periods       MatchScore[]
-  championship  Championship? @relation("ChampionshipMatch")
-  defense       TitleDefense?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
+  athleteAId String
+  athleteBId String
+  winnerId String?
+  status MatchStatus @default(UPCOMING)
+  scheduledAt DateTime
+  isTitleFight Boolean @default(false)
+  method MatchMethod?
+  summary String? @db.Text
+  season Season? @relation(fields:[seasonId], references:[id], onDelete:Restrict)
+  event Event @relation(fields:[eventId], references:[id], onDelete:Restrict)
+  weightClass WeightClass @relation(fields:[weightClassId], references:[id], onDelete:Restrict)
+  athleteA Athlete @relation("AthleteA", fields:[athleteAId], references:[id], onDelete:Restrict)
+  athleteB Athlete @relation("AthleteB", fields:[athleteBId], references:[id], onDelete:Restrict)
+  winner Athlete? @relation("Winner", fields:[winnerId], references:[id], onDelete:SetNull)
+  score MatchScore?
+  rankings Ranking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@index([seasonId, weightClassId, status])
-  @@index([eventId])
+  @@index([scheduledAt])
 }
-
 model MatchScore {
-  id      String @id @default(cuid())
-  matchId String
-  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  period  Int
-  pointsA Int    @default(0)
-  pointsB Int    @default(0)
-
-  @@unique([matchId, period])
+  id String @id @default(cuid())
+  matchId String @unique
+  athleteAPoints Int @default(0)
+  athleteBPoints Int @default(0)
+  periodOneA Int @default(0)
+  periodOneB Int @default(0)
+  periodTwoA Int @default(0)
+  periodTwoB Int @default(0)
+  penaltiesA Int @default(0)
+  penaltiesB Int @default(0)
+  bonus Int @default(0)
+  match Match @relation(fields:[matchId], references:[id], onDelete:Cascade)
 }
-
 model Ranking {
-  id            String      @id @default(cuid())
-  seasonId      String
+  id String @id @default(cuid())
+  seasonId String?
   weightClassId String
-  athleteId     String
-  season        Season      @relation(fields: [seasonId], references: [id])
-  weightClass   WeightClass @relation(fields: [weightClassId], references: [id])
-  athlete       Athlete     @relation(fields: [athleteId], references: [id])
-  rank          Int
-  previousRank  Int?
-  points        Int
-  wins          Int
-  losses        Int
-  techWins      Int         @default(0)
-  pins          Int         @default(0)
-  updatedAt     DateTime    @updatedAt
-
+  athleteId String
+  rank Int
+  points Int
+  wins Int @default(0)
+  losses Int @default(0)
+  previousRank Int?
+  season Season? @relation(fields:[seasonId], references:[id], onDelete:Cascade)
+  weightClass WeightClass @relation(fields:[weightClassId], references:[id], onDelete:Cascade)
+  athlete Athlete @relation(fields:[athleteId], references:[id], onDelete:Cascade)
+  match Match? @relation(fields:[lastMatchId], references:[id], onDelete:SetNull)
+  lastMatchId String?
+  updatedAt DateTime @updatedAt
   @@unique([seasonId, weightClassId, athleteId])
   @@index([seasonId, weightClassId, rank])
 }
-
 model RankingSnapshot {
-  id            String      @id @default(cuid())
-  seasonId      String
-  eventId       String
+  id String @id @default(cuid())
+  seasonId String?
   weightClassId String
-  athleteId     String
-  season        Season      @relation(fields: [seasonId], references: [id])
-  event         Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  weightClass   WeightClass @relation(fields: [weightClassId], references: [id])
-  athlete       Athlete     @relation(fields: [athleteId], references: [id])
-  rank          Int
-  points        Int
-  wins          Int
-  losses        Int
-  createdAt     DateTime    @default(now())
-
-  @@unique([eventId, weightClassId, athleteId])
-  @@index([athleteId])
+  athleteId String
+  eventId String?
+  rank Int
+  points Int
+  recordedAt DateTime @default(now())
+  season Season? @relation(fields:[seasonId], references:[id], onDelete:Cascade)
+  weightClass WeightClass @relation(fields:[weightClassId], references:[id], onDelete:Cascade)
+  athlete Athlete @relation(fields:[athleteId], references:[id], onDelete:Cascade)
+  @@index([athleteId, recordedAt])
 }
-
 model Championship {
-  id            String         @id @default(cuid())
-  seasonId      String
+  id String @id @default(cuid())
+  seasonId String?
   weightClassId String
-  athleteId     String
-  season        Season         @relation(fields: [seasonId], references: [id])
-  weightClass   WeightClass    @relation(fields: [weightClassId], references: [id])
-  athlete       Athlete        @relation(fields: [athleteId], references: [id])
-  wonAtMatchId  String?        @unique
-  wonAtMatch    Match?         @relation("ChampionshipMatch", fields: [wonAtMatchId], references: [id])
-  wonAt         DateTime
-  lostAt        DateTime?
-  isCurrent     Boolean        @default(true)
-  defenses      TitleDefense[]
-
+  athleteId String
+  matchId String? @unique
+  isCurrent Boolean @default(true)
+  wonAt DateTime
+  defenses Int @default(0)
+  season Season? @relation(fields:[seasonId], references:[id], onDelete:Restrict)
+  weightClass WeightClass @relation(fields:[weightClassId], references:[id], onDelete:Restrict)
+  athlete Athlete @relation(fields:[athleteId], references:[id], onDelete:Restrict)
   @@index([weightClassId, isCurrent])
 }
-
-model TitleDefense {
-  id             String       @id @default(cuid())
-  championshipId String
-  championship   Championship @relation(fields: [championshipId], references: [id], onDelete: Cascade)
-  matchId        String       @unique
-  match          Match        @relation(fields: [matchId], references: [id])
-}
-
 model Application {
-  id           String            @id @default(cuid())
-  firstName    String
-  lastName     String
-  birthDate    DateTime
-  city         String
-  country      String
-  phone        String
-  email        String
-  weightKg     Float
-  club         String?
-  coach        String?
-  experience   String?
-  achievements String?
-  socialLinks  String?
-  videoUrl     String?
-  photoUrl     String?
-  medicalInfo  String?
-  agreed       Boolean
-  status       ApplicationStatus @default(PENDING)
-  adminNotes   String?
-  athleteId    String?           @unique
-  athlete      Athlete?          @relation(fields: [athleteId], references: [id])
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  seasonId String?
+  weightClassId String?
+  ageDivision AgeDivision?
+  season Season? @relation(fields:[seasonId], references:[id], onDelete:Restrict)
+  weightClass WeightClass? @relation(fields:[weightClassId], references:[id], onDelete:Restrict)
+  id String @id @default(cuid())
+  firstName String
+  lastName String
+  birthDate DateTime
+  city String
+  country String
+  phone String
+  email String
+  weightKg Float
+  clubName String?
+  coachName String?
+  experience String? @db.Text
+  achievements String? @db.Text
+  videoUrl String?
+  photoUrl String?
+  medicalInfo String? @db.Text
+  status ApplicationStatus @default(PENDING)
+  adminNotes String? @db.Text
+  athleteId String?
+  athlete Athlete? @relation(fields:[athleteId], references:[id], onDelete:SetNull)
+  createdAt DateTime @default(now())
+  @@index([status, createdAt])
 }
-
 model MediaPost {
-  id          String        @id @default(cuid())
-  title       String
-  slug        String        @unique
-  excerpt     String?
-  content     String
-  category    MediaCategory
-  coverUrl    String?
-  isPublished Boolean       @default(false)
+  id String @id @default(cuid())
+  title String
+  slug String @unique
+  category String
+  excerpt String @db.Text
+  imageUrl String?
   publishedAt DateTime?
-  authorId    String
-  author      User          @relation(fields: [authorId], references: [id])
-  athleteId   String?
-  athlete     Athlete?      @relation(fields: [athleteId], references: [id])
-  createdAt   DateTime      @default(now())
-}
-
-model Video {
-  id        String   @id @default(cuid())
-  url       String
-  title     String?
   athleteId String?
-  athlete   Athlete? @relation(fields: [athleteId], references: [id])
+  athlete Athlete? @relation(fields:[athleteId], references:[id], onDelete:SetNull)
 }
-
-model Photo {
-  id        String   @id @default(cuid())
-  url       String
-  caption   String?
-  athleteId String?
-  athlete   Athlete? @relation(fields: [athleteId], references: [id])
-}
-
 model Sponsor {
-  id      String  @id @default(cuid())
-  name    String
-  logoUrl String
-  url     String?
-  tier    Int     @default(0)
-  events  Event[] @relation("EventSponsors")
-}
-
-model Notification {
-  id        String   @id @default(cuid())
-  type      String
-  title     String
-  body      String?
-  payload   Json?
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  action    String
-  entity    String
-  entityId  String?
-  meta      Json?
-  ip        String?
-  createdAt DateTime @default(now())
-
-  @@index([entity, entityId])
-}
-
-// Competition metadata extends existing seasons and matches; results remain in Match.
-model Territory {
   id String @id @default(cuid())
   name String
-  region String
+  logoUrl String?
+  website String?
   isActive Boolean @default(true)
-  competitions CompetitionTerritory[]
-  participants CompetitionParticipant[]
-  @@unique([region, name])
 }
-
-model CompetitionAgeCategory {
+model Notification {
   id String @id @default(cuid())
-  name String
-  minAge Int?
-  maxAge Int?
-  competitions Competition[]
-}
-
-model Competition {
-  id String @id @default(cuid())
-  seasonId String @unique
-  season Season @relation(fields:[seasonId], references:[id])
-  region String
-  ageCategoryId String
-  ageCategory CompetitionAgeCategory @relation(fields:[ageCategoryId], references:[id])
-  ageReferenceDate DateTime?
-  groupCodes String[]
-  territoryQuota Int
-  advanceCount Int
-  groupWeeks Int
-  firstPlayoffWeek Int
-  isPublished Boolean @default(false)
-  seeding Json?
-  classificationRules Json?
-  classificationApprovedAt DateTime?
-  youtubeUrl String?
-  liveActive Boolean @default(false)
-  currentFixtureId String?
-  currentFixture CompetitionFixture? @relation("CurrentFixture", fields:[currentFixtureId], references:[id])
-  territories CompetitionTerritory[]
-  participants CompetitionParticipant[]
-  divisions CompetitionDivision[]
-  ruleset CompetitionRuleset?
-  approvals CompetitionApproval[]
+  type String
+  message String
+  readAt DateTime?
   createdAt DateTime @default(now())
+}
+model AuditLog {
+  id String @id @default(cuid())
+  userId String?
+  action String
+  entity String
+  entityId String?
+  metadata Json?
+  createdAt DateTime @default(now())
+  user User? @relation(fields:[userId], references:[id], onDelete:SetNull)
+}
+model RankingRule {
+  id String @id @default(cuid())
+  name String @unique @default("default")
+  winPoints Int @default(3)
+  earlyWinBonus Int @default(1)
+  lossPoints Int @default(0)
+  penaltyPoints Int @default(0)
+  tieBreakRule String @default("WINS_THEN_FEWER_LOSSES")
   updatedAt DateTime @updatedAt
 }
 
-model CompetitionTerritory {
-  competitionId String
-  territoryId String
-  competition Competition @relation(fields:[competitionId], references:[id])
-  territory Territory @relation(fields:[territoryId], references:[id])
-  @@id([competitionId,territoryId])
-}
 
-model CompetitionParticipant {
+
+
+model AthleteSeasonRegistration {
   id String @id @default(cuid())
-  competitionId String
   athleteId String
+  seasonId String
+  ageDivision AgeDivision
   weightClassId String
-  territoryId String
-  competition Competition @relation(fields:[competitionId], references:[id])
-  athlete Athlete @relation(fields:[athleteId], references:[id])
-  weightClass WeightClass @relation(fields:[weightClassId], references:[id])
-  territory Territory @relation(fields:[territoryId], references:[id])
-  withdrawnAt DateTime?
-  withdrawalReason String?
-  member CompetitionGroupMember?
-  seedAsA CompetitionFixture[] @relation("SeedA")
-  seedAsB CompetitionFixture[] @relation("SeedB")
-  placements CompetitionPlacement[]
-  @@unique([competitionId,athleteId])
-  @@index([competitionId,weightClassId,territoryId])
+  status RegistrationStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  athlete Athlete @relation(fields:[athleteId], references:[id], onDelete:Restrict)
+  season Season @relation(fields:[seasonId], references:[id], onDelete:Restrict)
+  weightClass WeightClass @relation(fields:[weightClassId, ageDivision], references:[id, ageDivision], onDelete:Restrict)
+  @@unique([athleteId, seasonId])
+  @@index([seasonId, ageDivision, weightClassId], map: "AthleteSeasonRegistration_seasonId_ageDivision_weightClassId_id")
 }
 
-model CompetitionDivision {
-  id String @id @default(cuid())
-  competitionId String
+model EventWeightClass {
+  formats TournamentFormat[]
+  eventId String
   weightClassId String
-  competition Competition @relation(fields:[competitionId], references:[id])
-  weightClass WeightClass @relation(fields:[weightClassId], references:[id])
-  revision Int @default(0)
-  drawSeed String?
-  drawApprovedAt DateTime?
-  tieOrders Json?
-  qualification Json?
-  qualificationApprovedAt DateTime?
-  bracketApprovedAt DateTime?
-  placementsApprovedAt DateTime?
-  groups CompetitionGroup[]
-  fixtures CompetitionFixture[]
-  placements CompetitionPlacement[]
-  approvals CompetitionApproval[]
-  @@unique([competitionId,weightClassId])
+  event Event @relation(fields:[eventId], references:[id], onDelete:Cascade)
+  weightClass WeightClass @relation(fields:[weightClassId], references:[id], onDelete:Restrict)
+  @@id([eventId, weightClassId])
 }
-
-model CompetitionGroup {
+model TournamentParticipant {
   id String @id @default(cuid())
-  divisionId String
-  division CompetitionDivision @relation(fields:[divisionId], references:[id])
-  code String
-  members CompetitionGroupMember[]
-  fixtures CompetitionFixture[]
-  @@unique([divisionId,code])
+  eventId String
+  athleteId String
+  weightClassId String?
+  ageDivision AgeDivision?
+  status RegistrationStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  event Event @relation(fields:[eventId], references:[id], onDelete:Restrict)
+  athlete Athlete @relation(fields:[athleteId], references:[id], onDelete:Restrict)
+  weightClass WeightClass? @relation(fields:[weightClassId], references:[id], onDelete:Restrict)
+  @@unique([eventId, athleteId])
+  @@index([eventId, weightClassId])
 }
 
-model CompetitionGroupMember {
-  groupId String
-  participantId String @unique
-  group CompetitionGroup @relation(fields:[groupId], references:[id])
-  participant CompetitionParticipant @relation(fields:[participantId], references:[id])
-  position Int
-  @@id([groupId,participantId])
-  @@unique([groupId,position])
+// Additive extension: legacy tables and global ranking semantics remain unchanged.
+model SeasonCycle {
+  seasonId String @id
+  status String @default("PLANNED")
+  summary String? @db.Text
+  season Season @relation(fields:[seasonId], references:[id], onDelete:Restrict)
 }
 
-model CompetitionRuleset {
+model TournamentFormat {
   id String @id @default(cuid())
-  competitionId String @unique
-  competition Competition @relation(fields:[competitionId], references:[id])
-  config Json?
-  revision Int @default(0)
-  approvedAt DateTime?
-  updatedAt DateTime @updatedAt
+  eventId String
+  weightClassId String
+  groups Json
+  decisions Json @default("{}")
+  confirmedHash String?
+  createdAt DateTime @default(now())
+  event Event @relation(fields:[eventId], references:[id], onDelete:Restrict)
+  category EventWeightClass @relation(fields:[eventId,weightClassId], references:[eventId,weightClassId], onDelete:Restrict)
+  bouts TournamentBout[]
+  @@unique([eventId, weightClassId])
 }
 
-model CompetitionFixture {
+model TournamentBout {
   id String @id @default(cuid())
-  divisionId String
-  division CompetitionDivision @relation(fields:[divisionId], references:[id])
-  key String
-  stage String
-  week Int
+  formatId String
+  phase String
+  groupName String @default("")
   round Int
   position Int
-  groupId String?
-  group CompetitionGroup? @relation(fields:[groupId], references:[id])
-  matchId String? @unique
-  match Match? @relation(fields:[matchId], references:[id])
-  sourceAId String?
-  sourceA CompetitionFixture? @relation("SourceA", fields:[sourceAId], references:[id])
-  nextAsA CompetitionFixture[] @relation("SourceA")
-  sourceBId String?
-  sourceB CompetitionFixture? @relation("SourceB", fields:[sourceBId], references:[id])
-  nextAsB CompetitionFixture[] @relation("SourceB")
-  outcomeA String @default("WINNER")
-  outcomeB String @default("WINNER")
   seedAId String?
-  seedA CompetitionParticipant? @relation("SeedA", fields:[seedAId], references:[id])
   seedBId String?
-  seedB CompetitionParticipant? @relation("SeedB", fields:[seedBId], references:[id])
-  eventId String?
-  event Event? @relation(fields:[eventId], references:[id])
-  scheduledAt DateTime?
-  callTime DateTime?
-  matNumber String?
-  estimatedStart Boolean @default(true)
-  confirmedAt DateTime?
-  revision Int @default(0)
-  currentFor Competition[] @relation("CurrentFixture")
-  placements CompetitionPlacement[]
-  @@unique([divisionId,key])
-  @@index([divisionId,week,stage])
-}
-
-model CompetitionApproval {
-  id String @id @default(cuid())
-  competitionId String
-  competition Competition @relation(fields:[competitionId], references:[id])
-  divisionId String?
-  division CompetitionDivision? @relation(fields:[divisionId], references:[id])
-  userId String
-  user User @relation(fields:[userId], references:[id])
-  action String
-  reason String?
-  revision Int
-  snapshot Json
-  createdAt DateTime @default(now())
-  @@index([competitionId,createdAt])
-}
-
-model CompetitionPlacement {
-  id String @id @default(cuid())
-  divisionId String
-  division CompetitionDivision @relation(fields:[divisionId], references:[id])
-  place Int
-  participantId String
-  participant CompetitionParticipant @relation(fields:[participantId], references:[id])
-  basisFixtureId String
-  basisFixture CompetitionFixture @relation(fields:[basisFixtureId], references:[id])
-  @@unique([divisionId,place])
-  @@unique([divisionId,participantId])
+  matchId String? @unique
+  format TournamentFormat @relation(fields:[formatId], references:[id], onDelete:Restrict)
+  match Match? @relation(fields:[matchId], references:[id], onDelete:Restrict)
+  @@unique([formatId, phase, groupName, round, position])
 }

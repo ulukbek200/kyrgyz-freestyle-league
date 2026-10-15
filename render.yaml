@@ -1,0 +1,32 @@
+# Draft configuration: importing a Blueprint creates resources and deploys.
+# Do not apply without separate approval. Repository root must remain the rootDir.
+services:
+  - type: web
+    name: kfl-api
+    runtime: node
+    autoDeployTrigger: "off"
+    buildCommand: npm ci --include=dev && npm --workspace apps/api run db:generate && npm --workspace apps/api run build
+    startCommand: npm --workspace apps/api start
+    healthCheckPath: /api/ready
+    maxShutdownDelaySeconds: 30
+    # Enable ONLY after the database backup and explicit migration approval:
+    # preDeployCommand: npm --workspace apps/api run db:deploy
+    disk:
+      name: kfl-uploads
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+      - key: TRUSTED_PROXIES
+        sync: false
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
