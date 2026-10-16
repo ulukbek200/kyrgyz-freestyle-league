@@ -8,6 +8,7 @@ import {shutdownHandler} from '../src/shutdown.js';
 import {resolveUploadDirectory} from '../src/storage.js';
 import {webOrigins} from '../src/runtimeConfig.js';
 import {resolve} from 'node:path';
+import {workspaceRoot} from '../src/env.js';
 
 test('registrar access is a method/path allowlist, never an expanded admin role',()=>{
  for(const [method,path,allowed] of [['POST','/athletes',true],['POST','/uploads',true],['GET','/session',true],['GET','/lookups',true],['PATCH','/athletes/x',false],['DELETE','/athletes/x',false],['GET','/users',false],['POST','/matches/x/result',false],['POST','/rankings/recalculate',false],['POST','/events',false],['POST','/events/x/competition/w/playoff',false],['POST','/users',false],['POST','/athletes/x',false],['GET','/dashboard',false]] as const){
@@ -31,4 +32,19 @@ test('production requires persistent storage path and exact HTTPS origins',()=>{
  assert.throws(()=>resolveUploadDirectory('',true));assert.throws(()=>resolveUploadDirectory('relative',true));assert.equal(resolveUploadDirectory(resolve('.local/test-uploads'),true),resolve('.local/test-uploads'));
  assert.deepEqual(webOrigins('https://kfl.example, https://preview.example',true),['https://kfl.example','https://preview.example']);
  for(const value of ['', '*','http://localhost:5173','https://kfl.example/path'])assert.throws(()=>webOrigins(value,true));
+});
+
+test('ephemeral uploads require explicit opt-in and the exact absolute test directory',()=>{
+ const warnings:string[]=[];const warn=(message:string)=>warnings.push(message);
+ for(const flag of ['', 'false','TRUE','1']){
+  assert.throws(()=>resolveUploadDirectory('/tmp/kfl-uploads',true,flag,warn));
+  assert.throws(()=>resolveUploadDirectory('',true,flag,warn));
+  assert.equal(resolveUploadDirectory(resolve('.local/persistent'),true,flag,warn),resolve('.local/persistent'));
+ }
+ assert.equal(warnings.length,0);
+ for(const value of ['', 'relative','tmp/kfl-uploads',resolve('.local/persistent')])assert.throws(()=>resolveUploadDirectory(value,true,'true',warn));
+ assert.equal(warnings.length,0);
+ assert.equal(resolveUploadDirectory('/tmp/kfl-uploads',true,'true',warn),resolve('/tmp/kfl-uploads'));
+ assert.equal(warnings.length,1);assert.match(warnings[0],/permanently lost/);assert.match(warnings[0],/test storage/);
+ assert.equal(resolveUploadDirectory('',false,'false',warn),resolve(workspaceRoot,'.local/uploads'));
 });
