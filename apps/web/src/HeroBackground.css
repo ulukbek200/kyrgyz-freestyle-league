@@ -1,3 +1,3 @@
-.hero .hero-video-background{background:#121410 url('/media/kfl-hero-poster.webp') center/cover;pointer-events:none}
+.hero .hero-video-background{background:var(--bg) url('/media/kfl-hero-poster.webp') center/cover;pointer-events:none}
 .hero-video-background video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
-.hero-video-background::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#10120f 1%,rgba(16,18,15,.92) 26%,rgba(16,18,15,.36) 65%,rgba(16,18,15,.08)),linear-gradient(0deg,#10120f 0%,transparent 25%)}
+.hero-video-background::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 1%,color-mix(in srgb, var(--kfl-navy) 92%, transparent) 26%,color-mix(in srgb, var(--kfl-navy) 36%, transparent) 65%,color-mix(in srgb, var(--kfl-navy) 8%, transparent)),linear-gradient(0deg,var(--bg) 0%,transparent 25%)}

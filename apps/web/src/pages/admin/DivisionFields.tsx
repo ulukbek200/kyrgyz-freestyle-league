@@ -22,7 +22,7 @@ export function DivisionFields({form,publicApplication=false,originalBirth}:{for
   {!publicApplication&&<Form.Item name="dateOfBirth" label="Дата рождения" rules={required}><Input type="date"/></Form.Item>}
   <Form.Item name="ageDivision" label="Дивизион" dependencies={[publicApplication?'birthDate':'dateOfBirth']} rules={[...required,()=>({validator:(_,v)=>unchanged||computed?.division===v?Promise.resolve():Promise.reject(new Error(computed?'Возраст не допускается в U17/U23 в текущем году':'Укажите дату рождения и дождитесь загрузки правил'))})]}><Select disabled options={divisionOptions}/></Form.Item>
   <Form.Item name="weightClassId" label="Весовая категория" rules={required}><Select options={classes?.filter(w=>w.ageDivision===division).map(w=>({value:w.id,label:w.name}))}/></Form.Item>
-  {computed&&<div className="wide"><Tag>{computed.age} лет в {reference.data?.year} году</Tag>{computed.division?<Tag color="red">{computed.division}</Tag>:<Alert type={unchanged?'info':'error'} message={unchanged?'Исторический профиль сохранён. Допуск проверяется при регистрации в турнир.':'По году рождения участие в U17/U23 в текущем году недоступно'}/>}</div>}
+  {computed&&<div className="wide"><Tag>{computed.age} лет в {reference.data?.year} году</Tag>{computed.division?<Tag color="blue">{computed.division}</Tag>:<Alert type={unchanged?'info':'error'} message={unchanged?'Исторический профиль сохранён. Допуск проверяется при регистрации в турнир.':'По году рождения участие в U17/U23 в текущем году недоступно'}/>}</div>}
   {(rules.isError||reference.isError)&&<Alert className="wide" type="error" message="Не удалось загрузить правила возраста. Обновите страницу."/>}
  </>;
 }

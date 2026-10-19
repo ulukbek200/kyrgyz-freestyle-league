@@ -1,0 +1,280 @@
+/* Semantic surfaces. Brand values are installed from theme.ts before React mounts. */
+:root {
+  --bg: var(--kfl-light);
+  --panel: var(--kfl-white);
+  --raised: var(--kfl-blue-tint);
+  --text: var(--kfl-ink);
+  --muted: var(--kfl-muted);
+  --line: var(--kfl-line);
+  --accent: var(--kfl-blue);
+  --lime: var(--kfl-yellow); /* Compatibility for existing CTA class names. */
+  --display: 'Barlow Condensed', Impact, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light;
+}
+:where(.header,.footer,.hero,.profile-hero,.feature-athlete,.apply-banner,.champion-card,
+  .event-feature-live,.match-detail,.about-hero,.about-join,.about-gallery-caption,
+  .kfl-sidebar,.kfl-season-spotlight,.kfl-login-story) {
+  --bg: var(--kfl-navy);
+  --panel: var(--kfl-dark-panel);
+  --raised: var(--kfl-dark-raised);
+  --text: var(--kfl-white);
+  --muted: var(--kfl-dark-muted);
+  --line: var(--kfl-dark-line);
+  --accent: var(--kfl-yellow);
+  color: var(--text);
+  background-color: var(--bg);
+}
+body {color:var(--text);line-height:1.5}
+img,video {max-width:100%}
+:where(a,button,input,textarea,select,[tabindex]):focus-visible {outline:3px solid var(--kfl-blue);outline-offset:4px}
+:where(.header,.footer,.hero,.profile-hero,.apply-banner) :focus-visible {outline-color:var(--kfl-yellow)}
+.skip-link {position:fixed;left:16px;top:-100px;z-index:2000;padding:12px 20px;background:var(--kfl-yellow);color:var(--kfl-navy);font-weight:700}
+.skip-link:focus {top:16px}
+.header {gap:24px;padding-inline:max(calc((100vw - 1360px)/2),3vw);background:var(--kfl-navy);height:82px}
+.desktop-nav {gap:22px;font-size:13px}
+.desktop-nav a {padding-block:26px;border-bottom:3px solid transparent;white-space:nowrap}
+.desktop-nav a.active {color:var(--kfl-yellow);border-bottom-color:var(--kfl-yellow)}
+.header-right {gap:16px}
+.header .brand-mark,.footer .brand-mark {color:var(--kfl-navy);border-radius:5px}
+.header .apply-head {background:var(--kfl-yellow);color:var(--kfl-navy);padding:11px 14px;border-radius:6px;white-space:nowrap}
+.header .apply-head svg {color:inherit}
+.header .season-pill {display:none}
+.header .lang-switch {color:var(--kfl-white);border-color:var(--kfl-dark-line);min-height:40px;min-width:40px}
+.hero {height:auto;min-height:690px;background:var(--kfl-navy)}
+.hero h1 {font-size:clamp(64px,8.7vw,130px);line-height:.96;letter-spacing:-.015em;margin:24px 0}
+.hero h1 em {color:var(--kfl-white)}
+.hero-content {padding:78px 7vw 90px}
+.hero-content>p {font-size:16px;max-width:560px}
+.hero-index {margin-top:38px}
+.hero-gridline {inset:10% -12% auto auto;width:650px;height:650px;border:1px solid color-mix(in srgb,var(--kfl-yellow) 24%,transparent);border-radius:50%;background:none}
+.hero-gridline:before,.hero-gridline:after {content:'';position:absolute;inset:12%;border:1px solid color-mix(in srgb,var(--kfl-yellow) 24%,transparent);border-radius:50%}
+.hero-gridline:after {inset:32%;border-width:3px}
+.hero .hero-video-background {background-color:var(--kfl-navy)}
+.hero-video-background::after {background:linear-gradient(90deg,var(--kfl-navy),color-mix(in srgb,var(--kfl-navy) 88%,transparent) 28%,color-mix(in srgb,var(--kfl-navy) 20%,transparent)),linear-gradient(0deg,var(--kfl-navy),transparent 45%)}
+.button-lime,.button-outline {min-height:48px;border-radius:6px;font-size:12px;letter-spacing:.035em;justify-content:center;white-space:normal;height:auto;line-height:1.5}
+.button-lime {background:var(--kfl-yellow);color:var(--kfl-navy)!important;border-color:var(--kfl-yellow)}
+.button-lime:hover {background:var(--kfl-yellow-hover)!important;border-color:var(--kfl-yellow-hover)!important}
+.button-outline {color:var(--text);border-color:var(--line)}
+.button-outline:hover {color:var(--accent);border-color:var(--accent)}
+.ticker {background:var(--kfl-blue);color:var(--kfl-white);height:54px;gap:20px;padding-inline:24px;font-size:11px}
+.ticker b {color:var(--kfl-yellow)}
+.section-dark {background:var(--kfl-white)}
+.rankings-section {background:var(--kfl-light)}
+.eyebrow {color:var(--muted);font-size:11px;line-height:1.6}
+.section-heading h2,.profile-body h2 {line-height:1.04;font-size:clamp(34px,4.5vw,56px)}
+.section-heading h2 em {color:var(--accent)}
+.section-heading {gap:20px}
+.text-link,.text-link svg,.media-section .text-link,.media-section .text-link svg {color:var(--accent)}
+.text-link {font-size:12px;min-height:32px}
+.text-link:hover {text-decoration:underline;text-underline-offset:5px;color:var(--accent)}
+.upcoming-panel {background:var(--kfl-light);border:1px solid var(--line);border-radius:12px;padding:24px}
+.panel-title,.bout-meta,.bout-bottom {font-size:11px;gap:12px;line-height:1.6}
+.panel-title a,.bout-meta span:first-child {color:var(--accent);font-size:11px}
+.bout-versus {gap:14px;font-size:24px}
+.bout-versus b {flex:1;min-width:0;overflow-wrap:anywhere;border-left:3px solid var(--kfl-red);padding-left:10px}
+.bout-versus b:last-child {border-color:var(--kfl-blue);text-align:right;border-left:0;border-right:3px solid var(--kfl-blue);padding-right:10px}
+.event-feature-live {background:var(--kfl-blue);border:0;border-radius:12px;isolation:isolate}
+.event-feature-live:before {content:'';position:absolute;width:340px;height:340px;border:1px solid color-mix(in srgb,var(--kfl-yellow) 50%,transparent);border-radius:50%;right:-70px;top:-100px;box-shadow:0 0 0 45px color-mix(in srgb,var(--kfl-white) 5%,transparent);z-index:-1}
+.event-feature-live .event-info {margin-top:100px}
+.event-feature-live .event-info p,.event-feature-live .event-info>span {color:var(--kfl-white);font-size:13px}
+.rank-table {border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--kfl-white)}
+.rank-head {background:var(--kfl-navy);color:var(--kfl-white);font-size:10px;min-height:48px}
+.rank-row {min-height:78px;border-color:var(--line)}
+.rank-row:hover {background:var(--kfl-blue-tint)}
+.rank-num {color:var(--kfl-blue);font-size:26px}
+.rank-person {min-width:0;font-size:14px}
+.rank-person b {overflow-wrap:anywhere}
+.rank-person .avatar {border-radius:50%}
+.points {color:var(--kfl-blue);font-size:24px}
+.points small,.muted {color:var(--muted);font-size:11px}
+.trend .up,.trend .down {color:var(--kfl-blue)}
+.feature-athlete {background:var(--kfl-navy);height:auto;min-height:510px;padding-block:55px}
+.feature-athlete-copy {padding-right:24px;max-width:510px}
+.feature-athlete h2 {font-size:clamp(40px,4.5vw,62px);line-height:1.04;overflow-wrap:anywhere}
+.feature-athlete-image {filter:none}
+.champ-stamp {border-radius:50%;right:4%;top:24px;transform:none;border:2px solid var(--kfl-yellow)}
+.media-section {background:var(--kfl-white);color:var(--kfl-ink)}
+.story-card {border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--kfl-white);min-width:0}
+.story-card h3,.story-card p,.story-meta {margin-inline:20px}
+.story-card h3 {font-size:28px;line-height:1.15;margin-bottom:12px}
+.story-card p {font-size:14px;padding-bottom:22px;line-height:1.7}
+.story-meta {font-size:11px}
+.story-image {filter:none}
+.story-image>span {color:var(--kfl-white);font-size:11px}
+.apply-banner {background:var(--kfl-blue);gap:32px}
+.apply-banner:after {content:'';width:400px;height:400px;top:-70px;right:12%;border:1px solid color-mix(in srgb,var(--kfl-yellow) 25%,transparent);border-radius:50%;box-shadow:0 0 0 60px color-mix(in srgb,var(--kfl-white) 4%,transparent)}
+.apply-banner>* {z-index:1}
+.apply-banner .eyebrow,.apply-number {color:var(--kfl-white)}
+.footer {background:var(--kfl-navy);flex-wrap:wrap;font-size:12px}
+.copyright {color:var(--kfl-dark-muted);font-size:11px}
+.page-wrap {padding-top:52px;min-width:0}
+.page-intro {border-bottom:1px solid var(--line);margin-bottom:32px;position:relative}
+.page-intro:before {content:'';display:block;width:48px;height:5px;background:var(--kfl-yellow);margin-bottom:22px}
+.page-intro h1 {font-size:clamp(44px,7vw,88px);line-height:1.05;overflow-wrap:anywhere;color:var(--kfl-navy)}
+.page-intro p {font-size:15px;color:var(--muted)}
+.filters {flex-wrap:wrap}
+.filters .ant-select-selector {background:var(--kfl-white)!important;color:var(--kfl-ink)!important;border-color:var(--line)!important;border-radius:8px!important}
+.filters .ant-select-selection-item {font-size:14px}
+.searchbar {background:var(--kfl-white);border-radius:8px}
+.searchbar .ant-input {color:var(--kfl-ink);font-size:14px}
+.athlete-grid {grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.athlete-card {background:var(--kfl-white);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.athlete-card:hover {background:var(--kfl-white);border-color:var(--kfl-blue);transform:translateY(-3px)}
+.athlete-card-info h3 {line-height:1.08;overflow-wrap:anywhere}
+.athlete-card-info h3 b {color:var(--kfl-blue)}
+.athlete-card-info>span,.athlete-card-bottom {font-size:11px}
+.athlete-weight {background:var(--kfl-navy);color:var(--kfl-yellow);padding:6px 9px;border-radius:20px;font-size:11px}
+.athlete-open {border-radius:50%;color:var(--kfl-navy)}
+.avatar {filter:none;background-color:var(--raised)}
+.profile-hero {height:auto;min-height:570px;padding-top:70px}
+.profile-image {filter:none}
+.profile-copy {max-width:100%;min-width:0}
+.profile-copy h1 {font-size:clamp(48px,7vw,96px);line-height:1.05;overflow-wrap:anywhere}
+.profile-copy h1 em {color:var(--kfl-yellow)}
+.profile-stats {gap:16px;border-top:0;flex-wrap:wrap}
+.profile-stats>div {width:100px;min-height:100px;border:1px solid var(--kfl-dark-line);border-radius:50%;place-content:center;text-align:center;background:var(--kfl-navy)}
+.profile-stats span {font-size:10px}
+.profile-match {grid-template-columns:110px minmax(0,1fr) 75px 100px 90px;overflow-wrap:anywhere;font-size:13px}
+.profile-match>a {color:var(--kfl-blue)}
+.match-card {background:var(--kfl-white);border-radius:12px;border-color:var(--line);border-top:3px solid var(--kfl-yellow)}
+.match-card:hover {border-color:var(--kfl-blue)}
+.match-card-meta {font-size:11px}
+.match-card-fighters {gap:16px;line-height:1.25}
+.match-card-fighters>b {flex:1;border-top:3px solid var(--kfl-red);padding-top:12px;overflow-wrap:anywhere}
+.match-card-fighters>b:last-child {border-color:var(--kfl-blue);text-align:right}
+.match-card-fighters .versus {color:var(--kfl-ink);background:var(--kfl-yellow-tint);border:1px solid var(--kfl-yellow);border-radius:50%;min-width:52px;min-height:52px;display:grid;place-content:center}
+.match-detail {background:var(--kfl-navy);border-radius:16px;position:relative;gap:24px}
+.fighter-corner {min-width:0}
+.corner-label {display:block;margin-bottom:18px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fighter-corner .avatar {max-width:100%;border-bottom:5px solid var(--kfl-blue);border-radius:10px}
+.corner-red .avatar {border-color:var(--kfl-red)}
+.corner-red .corner-label {border-left:4px solid var(--kfl-red)}
+.corner-blue .corner-label {border-right:4px solid var(--kfl-blue)}
+.match-detail h2 {overflow-wrap:anywhere;line-height:1.1}
+.match-detail h2 em {color:var(--kfl-white)}
+.detail-score {border:2px solid var(--kfl-yellow);border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;padding:12px;min-width:0}
+.detail-score b {font-size:clamp(28px,4vw,48px);margin:8px 0;color:var(--kfl-yellow)}
+.detail-score>span {overflow-wrap:anywhere;font-size:10px}
+.champion-card {border-radius:12px;border-bottom:4px solid var(--kfl-yellow)}
+.champion-card-copy {right:20px}
+.champion-card-copy h2 {line-height:1.05;overflow-wrap:anywhere}
+.champion-card-copy>span,.champion-card-copy p {font-size:11px}
+.application-form {max-width:850px;background:var(--kfl-white);border:1px solid var(--line);border-radius:12px;padding:32px}
+.application-form .ant-form-item-label>label {color:var(--kfl-ink);font-size:12px}
+.application-form .ant-input {background:var(--kfl-white);color:var(--kfl-ink);border-color:var(--line);border-radius:8px}
+.application-form .ant-input:focus {border-color:var(--kfl-blue)}
+.success-box {background:var(--kfl-white);color:var(--kfl-blue);border-color:var(--line);border-radius:12px}
+.success-box h2 {color:var(--kfl-navy)}
+.event-feature {border-radius:12px;background:var(--panel)}
+.event-copy h2 {font-family:var(--display)}
+.event-open {color:var(--kfl-blue)}
+.event-status {background:var(--kfl-navy);color:var(--kfl-white);border-radius:20px;font-size:11px}
+.event-status.status-LIVE {color:var(--kfl-yellow)}
+.event-filters>button {color:var(--kfl-ink);border-color:var(--line);border-radius:24px;background:var(--kfl-white)}
+.event-filters>button[aria-pressed=true] {background:var(--kfl-blue);border-color:var(--kfl-blue);color:var(--kfl-white)}
+.event-participants>a {border-radius:10px;background:var(--kfl-white)}
+.competition-bout {color:var(--text)}
+.competition-bout .is-winner {color:var(--kfl-blue)}
+.competition-podium {background:var(--kfl-yellow-tint);border-color:var(--kfl-yellow);border-radius:12px}
+.public-article>p {color:var(--muted);font-size:17px;line-height:1.8}
+.about-page {color:var(--text);--about-accent:var(--kfl-blue)}
+.about-hero,.about-join {--about-accent:var(--kfl-yellow)}
+.about-values-grid button {color:var(--text)}
+.about-actions a {color:var(--kfl-navy)}
+.about-actions a:nth-child(2),.about-video-control {color:var(--kfl-white)}
+/* The management workspace shares the same light controls and dark league navigation. */
+.kfl-root {--k-bg:var(--kfl-light);--k-card:var(--kfl-white);--k-line:var(--kfl-line);--k-red:var(--kfl-blue);color:var(--kfl-ink);background:var(--kfl-light)}
+.kfl-workspace,.kfl-main,.kfl-page,.kfl-login {background:var(--kfl-light);color:var(--kfl-ink)}
+.kfl-sidebar {background:var(--kfl-navy)}
+.kfl-topbar {background:var(--kfl-white);border-color:var(--line)}
+.kfl-nav-group>a.active {background:var(--kfl-blue);color:var(--kfl-white);border-left-color:var(--kfl-yellow)}
+.kfl-nav-group>a.active svg {color:var(--kfl-yellow)}
+.kfl-nav-group>a:hover {color:var(--kfl-white);background:var(--kfl-dark-raised)}
+.kfl-brand>b,.kfl-login-story em {color:var(--kfl-yellow)}
+.kfl-panel,.kfl-stat,.kfl-media-card,.kfl-season,.kfl-champion {background:var(--kfl-white);border-color:var(--line);border-radius:12px}
+.kfl-stat.accent,.kfl-season.is-active {background:var(--kfl-blue-tint);border-color:var(--kfl-blue)}
+.kfl-stat.accent>strong,.kfl-points {color:var(--kfl-blue)}
+.kfl-season-spotlight,.kfl-login-story {background:var(--kfl-navy);border-color:var(--kfl-dark-line)}
+.kfl-season-spotlight :is(p,small,.kfl-eyebrow),.kfl-season-facts span,.kfl-login-story p {color:var(--kfl-dark-muted)}
+.kfl-season-spotlight h2,.kfl-season-spotlight a {color:var(--kfl-white)}
+.kfl-season-facts b,.kfl-spotlight-top svg {color:var(--kfl-yellow)}
+.kfl-season-facts>div {border:1px solid var(--kfl-dark-line);border-radius:50%;width:110px;min-height:110px;align-items:center;justify-content:center;text-align:center;padding:8px}
+.kfl-root .ant-btn-primary,.kfl-login-form .ant-btn-primary {background:var(--kfl-yellow);border-color:var(--kfl-yellow);color:var(--kfl-navy);box-shadow:none}
+.kfl-root .ant-btn-primary:not(:disabled):hover {background:var(--kfl-yellow-hover);border-color:var(--kfl-yellow-hover);color:var(--kfl-navy)}
+.kfl-root .ant-btn-primary:disabled {background:var(--kfl-blue-tint);border-color:var(--line);color:var(--muted)}
+.kfl-status.status-live,.kfl-status.status-rejected,.kfl-status.status-suspended {background:var(--kfl-yellow-tint);color:var(--kfl-yellow-ink)}
+.kfl-status.status-active,.kfl-status.status-approved,.kfl-status.status-completed {background:var(--kfl-blue-tint);color:var(--kfl-blue)}
+.kfl-status.status-pending,.kfl-status.status-review,.kfl-status.status-upcoming {background:var(--kfl-yellow-tint);color:var(--kfl-yellow-ink)}
+.kfl-corner.red {border-color:var(--kfl-red)}
+.kfl-corner.blue {border-color:var(--kfl-blue)}
+.kfl-result-pair>div:first-child span {color:var(--kfl-red)}
+.kfl-result-pair>div:last-child span {color:var(--kfl-blue)}
+.kfl-fcv-topline {background:linear-gradient(90deg,var(--kfl-red) 0 45%,var(--kfl-yellow) 45% 55%,var(--kfl-blue) 55%)}
+.kfl-navigation-drawer .kfl-brand>b {color:var(--kfl-blue)}
+.kfl-root .ant-table-cell {font-size:13px}
+.kfl-root .ant-table-thead>tr>th {color:var(--kfl-white);background:var(--kfl-navy)}
+@media(max-width:1100px) {
+  .desktop-nav {display:none}.mobile-menu {display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}.header-right {margin-left:auto}
+  .athlete-grid {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:767px) {
+  .hero {min-height:650px}.hero-content {padding:70px 24px 100px}.hero h1 {font-size:clamp(52px,10vw,76px)}
+  .hero-content>p {font-size:14px}.hero-gridline {width:420px;height:420px;right:-220px;top:80px}
+  .hero-actions {flex-wrap:wrap}.hero-actions>a {flex:1;min-width:200px}.hero-caption {left:24px;right:24px;gap:12px;line-height:1.6}.hero-vertical {display:none}
+  .header {padding:0 18px;height:72px;gap:10px}.header .apply-head {display:none}.header-right {gap:10px}
+  .section {padding:56px 20px}.section-heading {align-items:flex-start;flex-wrap:wrap}.section-heading .text-link {margin-top:8px}
+  .pulse-grid,.story-grid {grid-template-columns:minmax(0,1fr)}
+  .feature-athlete-copy {margin-left:0;padding:140px 24px 20px}.feature-athlete-image {inset:0;opacity:.35}.feature-athlete {min-height:500px}
+  .apply-banner {padding:50px 24px;align-items:flex-start;flex-direction:column}.apply-banner h2 {font-size:42px;line-height:1.05}
+  .page-wrap {padding:36px 20px 64px}.athlete-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.athlete-photo {height:210px}
+  .athlete-card-info {padding:14px}.athlete-card-info h3 {font-size:25px}.athlete-card-bottom {gap:8px;flex-wrap:wrap}
+  .profile-hero {padding:48px 20px 35px;min-height:530px}.profile-stats {gap:10px}.profile-stats>div {width:88px;min-height:88px}
+  .profile-match {grid-template-columns:90px minmax(0,1fr);gap:12px}.profile-match .ant-tag {justify-self:start}
+  .match-detail {padding:24px 16px;grid-template-columns:minmax(0,1fr);gap:24px}.detail-score {width:150px;justify-self:center}
+  .fighter-corner {width:100%}.match-detail .avatar {width:160px;height:180px}.match-detail h2 {font-size:32px}
+  .application-form {padding:22px 16px}.form-grid {grid-template-columns:minmax(0,1fr)}
+  .filters .ant-select {flex:1;min-width:140px;max-width:100%}.event-filters {gap:8px}
+  .footer {gap:22px;padding:32px 24px}.footer-links {flex-wrap:wrap;margin-left:0;gap:18px}
+  .rank-head,.rank-row {gap:10px;padding-inline:12px}.rank-person {font-size:12px;gap:8px}.rank-person .avatar {width:30px;height:30px}.rank-num {font-size:22px}
+}
+@media(max-width:380px) {
+  .athlete-grid {grid-template-columns:minmax(0,1fr)}.hero h1 {font-size:48px}.header .brand small {font-size:7px}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* Keep muted metadata readable in all management cards. */
+.kfl-root {--k-muted:var(--kfl-muted)}
+.header .lang-switch {display:block}
+.kfl-sidebar .ant-btn-text {color:var(--kfl-dark-muted)}
+.kfl-nav-group>a.active:before {background:var(--kfl-yellow)}
+.event-feature-live .feature-tag {color:var(--kfl-white);font-size:11px}
+.bout-versus {font-family:var(--display)}
+.bout-versus b {font-size:clamp(17px,1.6vw,24px)}
+.section-heading h2,.feature-athlete h2,.apply-banner h2,.story-card h3,.event-info h3,
+.athlete-card-info h3,.match-detail h2,.champion-card h2,.season-card h2 {font-family:var(--display)}
+@media(max-width:767px){
+ .footer {display:flex}
+ .hero-actions {align-items:stretch}
+ .hero-actions>a {flex:auto;min-width:0}
+ .rank-head {font-size:9px}
+ .rank-table.full .rank-head,.rank-table.full .rank-row {grid-template-columns:32px minmax(0,1fr) 45px 50px}
+ .rank-table.full .rank-head>span:nth-child(3),.rank-table.full .rank-row>span:nth-child(3),
+ .rank-table.full .rank-head>span:nth-child(4),.rank-table.full .rank-row>span:nth-child(4) {display:none}
+ .profile-match .ant-tag {display:inline-block}
+}
+.kfl-login-story,.kfl-login-form {min-width:0;overflow-wrap:anywhere}
+.status,.trend .up,.season-card>div>span,.season-card>span,.event-date svg,.events-page .competition-bout>a {color:var(--accent)}
+.drawer-links a:hover {color:var(--kfl-blue)}
+@media(max-width:767px){.kfl-login {grid-template-columns:minmax(0,1fr)}.kfl-login-story h1 {overflow-wrap:anywhere}}
+.bout-row:hover .bout-versus b,.rank-row:hover .rank-arrow,.drawer-links svg {color:var(--accent)}
+@media(max-width:767px){
+ .rank-head,.rank-row {min-width:0;grid-template-columns:28px minmax(0,1fr) 32px 38px 14px;gap:8px}
+ .rank-table:not(.full) .rank-head>span:nth-child(3),.rank-table:not(.full) .rank-row>span:nth-child(3) {display:none}
+ .rank-head {font-size:8px;letter-spacing:.02em}
+ .rank-person {font-size:12px}.points {font-size:20px}.points small {display:none}
+ .rank-table {overflow:hidden}
+}

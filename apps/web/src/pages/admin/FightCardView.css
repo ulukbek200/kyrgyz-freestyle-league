@@ -33,10 +33,10 @@
   min-width: 0;
   overflow: hidden;
   padding: 22px;
-  background: var(--k-card, #1b1c22);
-  border: 1px solid var(--k-line, #292a33);
+  background: var(--k-card, var(--panel));
+  border: 1px solid var(--k-line, var(--line));
   border-radius: 10px;
-  color: #fff;
+  color: var(--text);
   transition:
     border-color 0.2s ease,
     transform 0.2s ease,
@@ -44,9 +44,9 @@
 }
 
 .kfl-fcv-card:hover {
-  border-color: rgba(238, 39, 55, 0.55);
+  border-color: color-mix(in srgb, var(--kfl-blue) 55%, transparent);
   transform: translateY(-2px);
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 14px 35px color-mix(in srgb, var(--kfl-navy) 20%, transparent);
 }
 
 .kfl-fcv-topline {
@@ -57,12 +57,12 @@
   height: 3px;
   background: linear-gradient(
     90deg,
-    #ee2737 0%,
-    #ee2737 45%,
-    #34353f 45%,
-    #34353f 55%,
-    #2563eb 55%,
-    #2563eb 100%
+    var(--kfl-red) 0%,
+    var(--kfl-red) 45%,
+    var(--raised) 45%,
+    var(--raised) 55%,
+    var(--kfl-blue) 55%,
+    var(--kfl-blue) 100%
   );
 }
 
@@ -79,7 +79,7 @@
 
 .kfl-fcv-eyebrow {
   display: block;
-  color: var(--k-red, #ee2737);
+  color: var(--k-red, var(--accent));
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -87,7 +87,7 @@
 
 .kfl-fcv-event h3 {
   margin: 8px 0 5px;
-  color: #fff;
+  color: var(--text);
   font-size: 19px;
   font-weight: 800;
   line-height: 1.3;
@@ -95,7 +95,7 @@
 }
 
 .kfl-fcv-event time {
-  color: var(--k-muted, #a4a5af);
+  color: var(--k-muted, var(--muted));
   font-size: 11px;
 }
 
@@ -136,7 +136,7 @@
   height: 115px;
   overflow: hidden;
   border-radius: 8px;
-  background: #292a33;
+  background: var(--raised);
 }
 
 .kfl-fcv-portrait img {
@@ -151,18 +151,18 @@
   place-items: center;
   width: 100%;
   height: 100%;
-  color: #999ba8;
+  color: var(--muted);
   font-size: 38px;
   font-weight: 900;
-  background: linear-gradient(145deg, #30313b, #202127);
+  background: linear-gradient(145deg, var(--raised), var(--panel));
 }
 
 .kfl-fcv-red .kfl-fcv-portrait {
-  border-bottom: 3px solid #ee2737;
+  border-bottom: 3px solid var(--kfl-red);
 }
 
 .kfl-fcv-blue .kfl-fcv-portrait {
-  border-bottom: 3px solid #2563eb;
+  border-bottom: 3px solid var(--kfl-blue);
 }
 
 .kfl-fcv-corner-label {
@@ -172,15 +172,15 @@
 }
 
 .kfl-fcv-red .kfl-fcv-corner-label {
-  color: #ff6c79;
+  color: var(--kfl-red);
 }
 
 .kfl-fcv-blue .kfl-fcv-corner-label {
-  color: #7ca6ff;
+  color: var(--kfl-blue);
 }
 
 .kfl-fcv-fighter > strong {
-  color: #fff;
+  color: var(--text);
   font-size: 14px;
   font-weight: 750;
   line-height: 1.35;
@@ -196,8 +196,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #d2a44b;
-  color: #171717;
+  background: var(--kfl-yellow);
+  color: var(--kfl-ink);
 }
 
 .kfl-fcv-center {
@@ -210,7 +210,7 @@
 
 .kfl-fcv-vs,
 .kfl-fcv-score {
-  color: var(--k-red, #ee2737);
+  color: var(--k-red, var(--accent));
   font-family: Impact, 'Arial Narrow', sans-serif;
   font-size: 34px;
   font-weight: 900;
@@ -220,11 +220,11 @@
 
 .kfl-fcv-score span {
   padding: 0 4px;
-  color: #777987;
+  color: var(--muted);
 }
 
 .kfl-fcv-center small {
-  color: #828492;
+  color: var(--muted);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -238,8 +238,8 @@
   flex-wrap: wrap;
   gap: 12px;
   padding: 13px 15px;
-  background: #24252d;
-  border: 1px solid #32333e;
+  background: var(--raised);
+  border: 1px solid var(--line);
   border-radius: 6px;
 }
 
@@ -250,14 +250,14 @@
 }
 
 .kfl-fcv-result > div > span {
-  color: #c7a976;
+  color: var(--accent);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.1em;
 }
 
 .kfl-fcv-result strong {
-  color: #fff;
+  color: var(--text);
   font-size: 13px;
 }
 
@@ -268,7 +268,7 @@
   gap: 8px;
   margin-top: 20px;
   padding-top: 18px;
-  border-top: 1px solid var(--k-line, #292a33);
+  border-top: 1px solid var(--k-line, var(--line));
 }
 
 .kfl-fcv-actions .ant-btn {
@@ -285,19 +285,19 @@
   align-items: center;
   min-height: 34px;
   padding: 0 4px;
-  color: #a4a5af;
+  color: var(--muted);
   font-size: 11px;
   text-decoration: none;
 }
 
 .kfl-fcv-actions a:hover {
-  color: #ff6875;
+  color: var(--accent);
 }
 
 .kfl-fcv-empty {
   padding: 40px 20px;
-  background: var(--k-card, #1b1c22);
-  border: 1px solid var(--k-line, #292a33);
+  background: var(--k-card, var(--panel));
+  border: 1px solid var(--k-line, var(--line));
   border-radius: 10px;
 }
 
